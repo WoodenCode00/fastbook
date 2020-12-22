@@ -14,4 +14,14 @@ logging:
     org.hibernate.SQL: DEBUG # Log SQL statements
     org.hibernate.type.descriptor.sql: TRACE
 
+# Fastbook platform configuration
+fastbook-config:
+  booking-item-config:
+    availability-range-days: 30
+  reservation-config:
+    max-period-days: 3
+    min-advance-days: 1
+    max-advance-days: 30
+  promotion-config:
+    reductionPercentage: 100
        
