@@ -1,6 +1,7 @@
 package com.acme.fastbook.persistence.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.acme.fastbook.model.BookingItem;
 
@@ -21,6 +22,15 @@ public interface BookingItemPersistenceService {
 	 * @return saved {@link BookingItem} object
 	 */
 	BookingItem create(BookingItem bookingItem);
+	
+	/**
+	 * Finds {@link BookingItem} by provided UUID
+	 * 
+	 * @param id BookingItem id to be searched for
+	 * 
+	 * @return {@link BookingItem} object
+	 */
+	BookingItem findById(UUID id);
 
 	/**
 	 * Finds all entries in DB

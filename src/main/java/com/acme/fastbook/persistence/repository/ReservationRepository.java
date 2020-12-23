@@ -22,22 +22,6 @@ import com.acme.fastbook.persistence.model.ReservationStatus;
 public interface ReservationRepository extends CrudRepository<ReservationEntity, UUID> {
 	
 	/**
-	 * Finds all reservations for a given booking item ID and with both booking dates
-	 * beyond or equal to the provided range of dates
-	 *   
-	 * @param bookingItemId id of {@link BookingItemEntity}
-	 * @param startRange start of the search range
-	 * @param endRange end of the search range
-	 * 
-	 * @return list of reservations
-	 */
-	List<ReservationEntity> findAllByBookingItemIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
-			UUID bookingItemId,
-			LocalDateTime startRange,
-			LocalDateTime endRange
-	);
-	
-	/**
 	 * Finds and returns all Reservations for the provided bookingItemId and within
 	 * the provided time period denoted by {@code startRange} and {@code endRange}. 
 	 * Status of the Reservation should not be in the list of {@code excludedStatuses}. 
