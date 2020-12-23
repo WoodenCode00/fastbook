@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.acme.fastbook.model.BookingItem;
+import com.acme.fastbook.model.BookingItemModelMapper;
 import com.acme.fastbook.persistence.model.BookingItemEntity;
 import com.acme.fastbook.persistence.repository.BookingItemRepository;
 
@@ -17,18 +19,22 @@ import com.acme.fastbook.persistence.repository.BookingItemRepository;
 @Service
 public class BaseBookingItemPersistenceService implements BookingItemPersistenceService {
 	
+	@Autowired
+	private BookingItemModelMapper modelMapper;
+	
 	/** {@link BookingItemRepository} bean */
 	@Autowired
 	private BookingItemRepository bookingItemRepository;
 	
 	@Override
-	public BookingItemEntity create(final BookingItemEntity bookingItem) {
-		return bookingItemRepository.save(bookingItem);
+	public BookingItem create(final BookingItem bookingItem) {
+		BookingItemEntity entityDb = bookingItemRepository.save(modelMapper.mapToDbEntity(bookingItem));
+		return modelMapper.mapToBookingItem(entityDb);
 	}
 	
 	@Override
-	public List<BookingItemEntity> findAll(){
-		return bookingItemRepository.findAll();
+	public List<BookingItem> findAll(){
+		return modelMapper.mapToBookingItemList(bookingItemRepository.findAll());
 	}
 
 }
