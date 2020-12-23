@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -37,6 +39,7 @@ public class ReservationEntity {
     private BookingItemEntity bookingItemId;
 	
 	/** Status of the reservation */
+	@Enumerated(EnumType.STRING)
 	private ReservationStatus reservationStatus;
 	
 	/** Customer name */
