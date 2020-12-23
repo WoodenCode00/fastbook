@@ -1,11 +1,9 @@
 package com.acme.fastbook.model;
 
 import java.math.BigInteger;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
-import com.acme.fastbook.persistence.model.ReservationStatus;
-
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
@@ -15,8 +13,9 @@ import lombok.Data;
  *
  */
 @Data
+@AllArgsConstructor
 public class Reservation {
-	
+
 	/** Reservation unique id */
 	private UUID id;
 	
@@ -32,11 +31,8 @@ public class Reservation {
 	/** Customer email */
 	private String customerEmail;
 	
-	/** Start date of reservation */
-	private LocalDateTime startDate;
-	
-	/** End date of reservation */
-	private LocalDateTime endDate;
+	/** Period of reservation */
+	private DateRange dateRange;
 	
 	/** Cost per day */
 	private BigInteger dailyCost;
