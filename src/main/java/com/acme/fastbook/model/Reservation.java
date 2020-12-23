@@ -1,6 +1,6 @@
 package com.acme.fastbook.model;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -35,6 +35,6 @@ public class Reservation {
 	private DateRange dateRange;
 	
 	/** Cost per day */
-	private BigInteger dailyCost;
+	private BigDecimal dailyCost;
 
 }

@@ -1,6 +1,6 @@
 package com.acme.fastbook.persistence.model;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.UUID;
 
@@ -38,7 +38,7 @@ public class BookingItemEntity {
 	private String address;
 	
 	/** Base daily cost. It can be adjusted by applying promotions during reservation time. */
-	private BigInteger baseDailyCost;
+	private BigDecimal baseDailyCost;
 	
 	/** Check-in time */
 	private LocalTime checkinTime;

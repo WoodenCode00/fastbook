@@ -1,6 +1,6 @@
 package com.acme.fastbook.persistence.model;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -55,5 +55,5 @@ public class ReservationEntity {
 	private LocalDateTime endDate;
 	
 	/** Cost per day */
-	private BigInteger dailyCost;
+	private BigDecimal dailyCost;
 }
