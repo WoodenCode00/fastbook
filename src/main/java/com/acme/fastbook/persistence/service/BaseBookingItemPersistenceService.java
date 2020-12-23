@@ -1,12 +1,12 @@
 package com.acme.fastbook.persistence.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.acme.fastbook.exception.BookingItemNotFoundException;
 import com.acme.fastbook.model.BookingItem;
 import com.acme.fastbook.model.BookingItemModelMapper;
 import com.acme.fastbook.persistence.model.BookingItemEntity;
@@ -35,12 +35,12 @@ public class BaseBookingItemPersistenceService implements BookingItemPersistence
 	}
 	
 	@Override
-	public BookingItem findById(UUID id) {
+	public Optional<BookingItem> findById(UUID id) {
 		
-		final BookingItemEntity bookingItemFromDb = bookingItemRepository.findById(id)
-		    .orElseThrow(() -> new BookingItemNotFoundException(
-		    		String.format("Booking item with id = [%s] is not found in DB.", id.toString())));
-		return modelMapper.mapToBookingItem(bookingItemFromDb);
+		Optional<BookingItemEntity> bookingItemEntityOpt = bookingItemRepository.findById(id);
+		
+		return bookingItemEntityOpt.isPresent() ? 
+				Optional.ofNullable(modelMapper.mapToBookingItem(bookingItemEntityOpt.get())) : Optional.empty();
 	}
 	
 	@Override
