@@ -2,10 +2,10 @@ package com.acme.fastbook.persistence.service;
 
 import java.util.List;
 
-import com.acme.fastbook.persistence.model.BookingItem;
+import com.acme.fastbook.persistence.model.BookingItemEntity;
 
 /**
- * Service interface to perform DB operations on {@link BookingItem} object used 
+ * Service interface to perform DB operations on {@link BookingItemEntity} object used 
  * to decouple the system from underlying persistence implementation
  *  
  * @author Mykhaylo Symulyk
@@ -14,19 +14,19 @@ import com.acme.fastbook.persistence.model.BookingItem;
 public interface BookingItemPersistenceService {
 	
 	/**
-	 * Saves {@link BookingItem} into DB 
+	 * Saves {@link BookingItemEntity} into DB 
 	 * 
-	 * @param bookingItem {@link BookingItem} object to be saved
+	 * @param bookingItem {@link BookingItemEntity} object to be saved
 	 * 
-	 * @return saved {@link BookingItem} object
+	 * @return saved {@link BookingItemEntity} object
 	 */
-	BookingItem create(BookingItem bookingItem);
+	BookingItemEntity create(BookingItemEntity bookingItem);
 
 	/**
 	 * Finds all entries in DB
 	 * 
-	 * @return List of all {@link BookingItem}-s
+	 * @return List of all {@link BookingItemEntity}-s
 	 */
-	List<BookingItem> findAll();
+	List<BookingItemEntity> findAll();
 
 }

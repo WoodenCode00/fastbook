@@ -1,7 +1,7 @@
 package com.acme.fastbook.exception;
 
 /**
- * Exception to be thrown when {@link Reservation} can not be found
+ * Exception to be thrown when {@link ReservationEntity} can not be found
  * 
  * @author Mykhaylo Symulyk
  *

@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,10 +18,11 @@ import lombok.NoArgsConstructor;
  * @author Mykhaylo Symulyk
  */
 @Entity
+@Table(name = "booking_item")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookingItem {
+public class BookingItemEntity {
 	
 	/** Unique ID */
 	@Id

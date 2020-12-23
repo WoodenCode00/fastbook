@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.acme.fastbook.persistence.model.BookingItem;
+import com.acme.fastbook.persistence.model.BookingItemEntity;
 import com.acme.fastbook.persistence.repository.BookingItemRepository;
 
 /**
@@ -22,12 +22,12 @@ public class BaseBookingItemPersistenceService implements BookingItemPersistence
 	private BookingItemRepository bookingItemRepository;
 	
 	@Override
-	public BookingItem create(final BookingItem bookingItem) {
+	public BookingItemEntity create(final BookingItemEntity bookingItem) {
 		return bookingItemRepository.save(bookingItem);
 	}
 	
 	@Override
-	public List<BookingItem> findAll(){
+	public List<BookingItemEntity> findAll(){
 		return bookingItemRepository.findAll();
 	}
 

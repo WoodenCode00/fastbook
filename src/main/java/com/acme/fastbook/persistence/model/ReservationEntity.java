@@ -9,6 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,10 +21,11 @@ import lombok.NoArgsConstructor;
  * @author Mykhaylo Symulyk
  */
 @Entity
+@Table(name = "reservation")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Reservation {
+public class ReservationEntity {
 	
 	/** Reservation unique id */
 	@Id
@@ -32,7 +34,7 @@ public class Reservation {
 	/** Booking Item ID */
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "booking_item_id")
-    private BookingItem bookingItemId;
+    private BookingItemEntity bookingItemId;
 	
 	/** Status of the reservation */
 	private ReservationStatus reservationStatus;
