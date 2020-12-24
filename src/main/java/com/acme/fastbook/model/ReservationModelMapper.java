@@ -97,6 +97,18 @@ public abstract class ReservationModelMapper {
 	@IterableMapping(qualifiedByName = "mainMapperToReservation")
 	public abstract List<Reservation> mapToReservationList(List<ReservationEntity> source);
 	
+	@Named(value = "reservationToDateRange")
+	@Mapping(target = "startDate", source = "reservation.dateRange.startDate")
+	@Mapping(target = "endDate", source = "reservation.dateRange.endDate")
+	public abstract DateRange extractDateRange(Reservation reservation);
+	
+	@IterableMapping(qualifiedByName = "reservationToDateRange")
+	public abstract List<DateRange> extractDateRanges(List<Reservation> reservations);
+	
+	public abstract com.acme.fastbook.persistence.model.ReservationStatus mapReservationStatusToDbEntity(ReservationStatus source);
+	
+	public abstract List<com.acme.fastbook.persistence.model.ReservationStatus> mapToDbEntityStatuses(List<ReservationStatus> source);
+	
 	/**
 	 * Presents java.util.UUID 
 	 * as com.acme.fastbook.persistence.model.BookingItemEntity.

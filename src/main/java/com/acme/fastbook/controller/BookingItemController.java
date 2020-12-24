@@ -28,6 +28,7 @@ import com.acme.fastbook.model.ReservationStatus;
 import com.acme.fastbook.model.api.AvailabilityDatesRequest;
 import com.acme.fastbook.model.api.AvailabilityDatesResponse;
 import com.acme.fastbook.model.config.FastBookConfig;
+import com.acme.fastbook.model.helper.DateRangeHelper;
 import com.acme.fastbook.persistence.service.BookingItemPersistenceService;
 import com.acme.fastbook.persistence.service.ReservationPersistenceService;
 import com.acme.fastbook.service.ReservationService;
@@ -95,6 +96,42 @@ public class BookingItemController {
 		reservation.setDailyCost(dailyCostWithReduction.setScale(2, RoundingMode.DOWN));
 		
 		return ReservationService.checkAndCreate(reservationPersistenceService, reservation);
+	}
+	
+	/**
+	 * Gets availability dates for a given bookingItemId
+	 * 
+	 * @param bookingItemId booking item ID
+	 * @param availabilityDatesRequest request object
+	 * 
+	 * @return response with the list of available dates
+	 */
+	@GetMapping(value = "/{bookingItemId}/get-availability-dates", consumes = "application/json", produces = "application/json")
+	public AvailabilityDatesResponse getAvailabilityDates(
+			@PathVariable UUID bookingItemId,
+			@RequestBody AvailabilityDatesRequest availabilityDatesRequest) {
+
+		int defaultSearchPeriod = fastBookConfig.getBookingItemConfig().getAvailabilityRangeDays();
+		
+		final LocalDateTime startRange = availabilityDatesRequest.getDateRange().getStartDate();
+
+		final LocalDateTime endRange = Objects.nonNull(availabilityDatesRequest.getDateRange().getEndDate()) ?
+				availabilityDatesRequest.getDateRange().getEndDate() : startRange.plusDays(defaultSearchPeriod); 
+
+		final List<ReservationStatus> excludeStatuses = Arrays.asList(ReservationStatus.CANCELLED);
+
+		final List<Reservation> reservations = reservationPersistenceService.findAllForBookingItemIdAndWithinDateRange(
+				bookingItemId, 
+				availabilityDatesRequest.getDateRange().getStartDate(), 
+				endRange, 
+				excludeStatuses);
+
+		final List<DateRange> reservedRanges = reservationModelMapper.extractDateRanges(reservations);
+
+		final List<DateRange> availableRanges = DateRangeHelper.transformReservedRangesIntoAvailableRanges(
+				startRange, endRange, reservedRanges);
+		
+		return new AvailabilityDatesResponse(bookingItemId, availableRanges);
 	}
 
 	/**
@@ -167,6 +204,5 @@ public class BookingItemController {
 			throw new InvalidRequestException(errorMessages);
 		}
 	}
-
-
+	
 }
