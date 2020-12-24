@@ -1,22 +1,22 @@
 package com.acme.fastbook.exception;
 
 /**
- * Exception to be thrown when {@link ReservationEntity} can not be found
+ * Exception to be thrown when {@link BookingItemEntity} can not be found
  * 
  * @author Mykhaylo Symulyk
  *
  */
-public class ReservationNotFoundException extends RuntimeException {
-	
+public class BookingItemNotFoundException extends RuntimeException {
+
     /** Serial version UID */
-	private static final long serialVersionUID = 6829479769711380881L;
+	private static final long serialVersionUID = 2873659375555713597L;
 
 	/**
 	 * Constructor
 	 * 
 	 * @param message descriptive message
 	 */
-	public ReservationNotFoundException(final String message) {
+	public BookingItemNotFoundException(final String message) {
 		super(message);
 	}
 	
@@ -26,7 +26,7 @@ public class ReservationNotFoundException extends RuntimeException {
 	 * @param message descriptive message
 	 * @param cause original exception
 	 */
-	public ReservationNotFoundException(final String message, final Throwable cause) {
+	public BookingItemNotFoundException(final String message, final Throwable cause) {
 		super(message, cause);
 	}
 

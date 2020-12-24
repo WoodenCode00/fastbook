@@ -5,18 +5,18 @@ import java.util.UUID;
 
 import org.springframework.data.repository.CrudRepository;
 
-import com.acme.fastbook.persistence.model.BookingItem;
+import com.acme.fastbook.persistence.model.BookingItemEntity;
 
 /**
- * DB Repository implementation to manage DB data for {@link BookingItem}. It inherits methods from
+ * DB Repository implementation to manage DB data for {@link BookingItemEntity}. It inherits methods from
  * Spring's {@link CrudRepository} interface.
  *  
  * @author Mykhaylo Symulyk
  *
  */
-public interface BookingItemRepository extends CrudRepository<BookingItem, UUID> {
+public interface BookingItemRepository extends CrudRepository<BookingItemEntity, UUID> {
 	
 	@Override
-	List<BookingItem> findAll();
+	List<BookingItemEntity> findAll();
 
 }

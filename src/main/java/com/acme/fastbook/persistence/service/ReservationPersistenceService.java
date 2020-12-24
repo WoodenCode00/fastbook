@@ -4,8 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import com.acme.fastbook.persistence.model.BookingItem;
-import com.acme.fastbook.persistence.model.Reservation;
+import com.acme.fastbook.model.Reservation;
 import com.acme.fastbook.persistence.model.ReservationStatus;
 
 /**

@@ -1,7 +1,7 @@
 package com.acme.fastbook.persistence.model;
 
 /**
- * Enum constants to describe {@link Reservation}'s status
+ * Enum constants to describe {@link ReservationEntity}'s status
  * 
  * @author Mykhaylo Symulyk
  *

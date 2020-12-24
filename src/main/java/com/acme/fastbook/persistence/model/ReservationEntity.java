@@ -1,14 +1,17 @@
 package com.acme.fastbook.persistence.model;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,10 +23,11 @@ import lombok.NoArgsConstructor;
  * @author Mykhaylo Symulyk
  */
 @Entity
+@Table(name = "reservation")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Reservation {
+public class ReservationEntity {
 	
 	/** Reservation unique id */
 	@Id
@@ -32,9 +36,10 @@ public class Reservation {
 	/** Booking Item ID */
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "booking_item_id")
-    private BookingItem bookingItemId;
+    private BookingItemEntity bookingItemId;
 	
 	/** Status of the reservation */
+	@Enumerated(EnumType.STRING)
 	private ReservationStatus reservationStatus;
 	
 	/** Customer name */
@@ -50,5 +55,5 @@ public class Reservation {
 	private LocalDateTime endDate;
 	
 	/** Cost per day */
-	private BigInteger dailyCost;
+	private BigDecimal dailyCost;
 }

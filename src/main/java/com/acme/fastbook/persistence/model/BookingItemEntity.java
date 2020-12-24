@@ -1,11 +1,12 @@
 package com.acme.fastbook.persistence.model;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.UUID;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,10 +18,11 @@ import lombok.NoArgsConstructor;
  * @author Mykhaylo Symulyk
  */
 @Entity
+@Table(name = "booking_item")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookingItem {
+public class BookingItemEntity {
 	
 	/** Unique ID */
 	@Id
@@ -36,7 +38,7 @@ public class BookingItem {
 	private String address;
 	
 	/** Base daily cost. It can be adjusted by applying promotions during reservation time. */
-	private BigInteger baseDailyCost;
+	private BigDecimal baseDailyCost;
 	
 	/** Check-in time */
 	private LocalTime checkinTime;
