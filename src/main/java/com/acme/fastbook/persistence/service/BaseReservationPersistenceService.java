@@ -56,11 +56,13 @@ public class BaseReservationPersistenceService implements ReservationPersistence
 	@Override
 	public Reservation update(final Reservation reservation) {
 		
-		ReservationEntity reservationToUpdate = reservationRepository.findById(reservation.getId())
+		ReservationEntity reservationAsDbEntity = modelMapper.mapToDbEntity(reservation);
+		
+		ReservationEntity reservationToUpdate = reservationRepository.findById(reservationAsDbEntity.getId())
 				.orElseThrow(() -> new ReservationNotFoundException(
-					String.format(RESERVATION_NOT_FOUND_ERROR_MSG, reservation.getId().toString())));
+					String.format(RESERVATION_NOT_FOUND_ERROR_MSG, reservationAsDbEntity.getId().toString())));
 
-		CopyUtils.copyNonNullProperties(reservation, reservationToUpdate);
+		CopyUtils.copyNonNullProperties(reservationAsDbEntity, reservationToUpdate);
 
 		final ReservationEntity entity = reservationRepository.save(reservationToUpdate);
 		
