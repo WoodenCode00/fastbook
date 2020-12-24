@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Model POJO to represent a reservation
@@ -14,6 +15,7 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Reservation {
 
 	/** Reservation unique id */
