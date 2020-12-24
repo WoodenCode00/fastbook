@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 import com.acme.fastbook.exception.ReservationNotFoundException;
 import com.acme.fastbook.model.Reservation;
 import com.acme.fastbook.model.ReservationModelMapper;
+import com.acme.fastbook.model.ReservationStatus;
 import com.acme.fastbook.persistence.model.ReservationEntity;
-import com.acme.fastbook.persistence.model.ReservationStatus;
 import com.acme.fastbook.persistence.repository.ReservationRepository;
 import com.acme.fastbook.utils.CopyUtils;
 
@@ -48,11 +48,24 @@ public class BaseReservationPersistenceService implements ReservationPersistence
 	public List<Reservation> findAllForBookingItemIdAndWithinDateRange(UUID bookingItemId, LocalDateTime startRange,
 			LocalDateTime endRange, List<ReservationStatus> excludedStatuses) {
 		
-		final List<ReservationEntity> entitiesDb = reservationRepository.findAllForBookingItemIdAndWithinDateRange(bookingItemId, startRange, endRange, excludedStatuses);
+		List<com.acme.fastbook.persistence.model.ReservationStatus> statusesAsDbEntities = modelMapper.mapToDbEntityStatuses(excludedStatuses);
+		
+		final List<ReservationEntity> entitiesDb = reservationRepository.findAllForBookingItemIdAndWithinDateRange(
+				bookingItemId, startRange, endRange, statusesAsDbEntities);
 		
 		return modelMapper.mapToReservationList(entitiesDb);
 	}
-	
+
+	@Override
+	public long getNumberOfReservations(UUID bookingItemId, LocalDateTime startRange, LocalDateTime endRange,
+			List<ReservationStatus> excludedStatuses) {
+		
+		List<com.acme.fastbook.persistence.model.ReservationStatus> statusesAsDbEntities = modelMapper.mapToDbEntityStatuses(excludedStatuses);
+
+		return reservationRepository.getNumberOfReservations(
+				bookingItemId, startRange, endRange, statusesAsDbEntities);
+	}
+
 	@Override
 	public Reservation update(final Reservation reservation) {
 		

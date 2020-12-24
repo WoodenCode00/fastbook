@@ -20,7 +20,7 @@ import com.acme.fastbook.persistence.model.ReservationStatus;
  *
  */
 public interface ReservationRepository extends CrudRepository<ReservationEntity, UUID> {
-	
+
 	/**
 	 * Finds and returns all Reservations for the provided bookingItemId and within
 	 * the provided time period denoted by {@code startRange} and {@code endRange}. 
@@ -33,22 +33,30 @@ public interface ReservationRepository extends CrudRepository<ReservationEntity,
 	 * 
 	 * @return list of Reservations
 	 */
-	@Query("SELECT r FROM ReservationEntity r WHERE "
-			+ "r.bookingItemId = :bookingItemId "
-			+ "AND r.reservationStatus NOT IN :excludedStatuses "
-			+ "AND ("
-			+         "(r.startDate <= :startRange AND r.endDate >= :startRange) "
-			+       "OR "
-			+         "(r.startDate >= :startRange AND r.endDate <= :endRange) "
-			+       "OR "
-			+         "(r.startDate <= :endRange AND r.endDate >= :endRange) "
-			+ ")"
-	)
+	@Query(SqlConstant.RESERVATIONS_SELECT_CLAUSE + SqlConstant.WITHIN_DATE_RANGE_WHERE_CLAUSE)
 	List<ReservationEntity> findAllForBookingItemIdAndWithinDateRange(
 			@Param("bookingItemId") UUID bookingItemId,
 			@Param("startRange") LocalDateTime startRange,
 			@Param("endRange") LocalDateTime endRange,
 			@Param("excludedStatuses") List<ReservationStatus> excludedStatuses
 	);
-	
+
+	/**
+	 * Gets the number of reservations for the provided date range
+	 * 
+	 * @param bookingItemId ID of {@link BookingItemEntity}
+	 * @param startRange start of the search range
+	 * @param endRange end of the search range
+	 * @param excludedStatuses List of excluded statuses
+	 * 
+	 * @return number of reservations within the provided range
+	 */
+	@Query(SqlConstant.COUNT_SELECT_CLAUSE + SqlConstant.WITHIN_DATE_RANGE_WHERE_CLAUSE)
+	long getNumberOfReservations(
+	    @Param("bookingItemId") UUID bookingItemId,
+	    @Param("startRange") LocalDateTime startRange,
+	    @Param("endRange") LocalDateTime endRange,
+	    @Param("excludedStatuses") List<ReservationStatus> excludedStatuses
+	);
+
 }

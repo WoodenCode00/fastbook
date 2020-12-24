@@ -5,12 +5,14 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,11 +21,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.acme.fastbook.exception.InvalidRequestException;
 import com.acme.fastbook.model.BookingItem;
+import com.acme.fastbook.model.DateRange;
 import com.acme.fastbook.model.Reservation;
+import com.acme.fastbook.model.ReservationModelMapper;
 import com.acme.fastbook.model.ReservationStatus;
+import com.acme.fastbook.model.api.AvailabilityDatesRequest;
+import com.acme.fastbook.model.api.AvailabilityDatesResponse;
 import com.acme.fastbook.model.config.FastBookConfig;
 import com.acme.fastbook.persistence.service.BookingItemPersistenceService;
 import com.acme.fastbook.persistence.service.ReservationPersistenceService;
+import com.acme.fastbook.service.ReservationService;
 import com.acme.fastbook.validation.Validation;
 import com.acme.fastbook.validation.ValidationRunner;
 
@@ -51,6 +58,10 @@ public class BookingItemController {
 	/** Application configuration object */
 	@Autowired
 	private FastBookConfig fastBookConfig;
+	
+	/** Mapper for {@link Reservation} class */
+	@Autowired
+	private ReservationModelMapper reservationModelMapper;
 	
 	/**
 	 * Endpoint to submit a new reservation
@@ -83,7 +94,7 @@ public class BookingItemController {
 		reservation.setReservationStatus(ReservationStatus.ACTIVE);
 		reservation.setDailyCost(dailyCostWithReduction.setScale(2, RoundingMode.DOWN));
 		
-		return reservationPersistenceService.create(reservation);
+		return ReservationService.checkAndCreate(reservationPersistenceService, reservation);
 	}
 
 	/**
@@ -93,6 +104,8 @@ public class BookingItemController {
 	 * @param reservation Reservation object to be validated
 	 */
 	private void validateReservationOrThrow(final Reservation reservation) {
+		
+		final LocalDateTime currentTime = LocalDateTime.now();
 		
 		List<Validation<Reservation>> validations = new ArrayList<>();
 		
@@ -110,17 +123,31 @@ public class BookingItemController {
 				res -> Objects.nonNull(res.getDateRange().getEndDate()),
 				"Property reservation.endDate must not be Null."));
 		
-		// check if startDate is not in the past
+		// if startDate is present, do below validations
 		if (Objects.nonNull(reservation.getDateRange().getStartDate())) {
+			// check if startDate is not in the past
 			validations.add(new Validation<>(
-					res -> res.getDateRange().getStartDate().isAfter(LocalDateTime.now()),
+					res -> res.getDateRange().getStartDate().isAfter(currentTime),
 					"Property reservation.startDate must not be in the past."));
+			
+			// check if startDate is within minimum advance reservation days
+			final int minAdvanceDays = fastBookConfig.getReservationConfig().getMinAdvanceDays();
+			validations.add(new Validation<>(
+					res -> ChronoUnit.DAYS.between(currentTime, res.getDateRange().getStartDate()) >= minAdvanceDays,
+					"Reservation.startDate must be at least " + minAdvanceDays + " day(s) in advance."));
+			
+			// check if startDate is within maximum advance reservation days
+			final int maxAdvanceDays = fastBookConfig.getReservationConfig().getMaxAdvanceDays();
+			validations.add(new Validation<>(
+					res -> ChronoUnit.DAYS.between(currentTime, res.getDateRange().getStartDate()) <= maxAdvanceDays,
+					"Reservation.startDate must not be more than " + maxAdvanceDays + " day(s) in advance."));
+			
 		}
 		
 		// check if startDate is not in the past
 		if (Objects.nonNull(reservation.getDateRange().getEndDate())) {
 			validations.add(new Validation<>(
-					res -> res.getDateRange().getEndDate().isAfter(LocalDateTime.now()),
+					res -> res.getDateRange().getEndDate().isAfter(currentTime),
 					"Property reservation.endDate must not be in the past."));
 		}
 		
@@ -140,5 +167,6 @@ public class BookingItemController {
 			throw new InvalidRequestException(errorMessages);
 		}
 	}
+
 
 }

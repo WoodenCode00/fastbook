@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.acme.fastbook.model.Reservation;
-import com.acme.fastbook.persistence.model.ReservationStatus;
+import com.acme.fastbook.model.ReservationStatus;
 
 /**
  * Service interface to perform DB operations on {@link Reservation} object used 
@@ -15,7 +15,7 @@ import com.acme.fastbook.persistence.model.ReservationStatus;
  *
  */
 public interface ReservationPersistenceService {
-	
+
 	/**
 	 * Create new entry in DB
 	 * 
@@ -24,7 +24,7 @@ public interface ReservationPersistenceService {
 	 * @return saved {@link Reservation} object
 	 */
 	Reservation create(Reservation reservation);
-	
+
 	/**
 	 * Gets {@link Reservation} object from DB for the provided {@code id}
 	 * 
@@ -33,8 +33,7 @@ public interface ReservationPersistenceService {
 	 * @return {@link Reservation} object from DB
 	 */
 	Reservation getReservation(UUID id);
-	
-	
+
 	/**
 	 * Finds all active reservations for provided Booking Item ID and range of dates. Reservations which
 	 * are partially covered by provided range of dates will also be included in result.
@@ -54,6 +53,22 @@ public interface ReservationPersistenceService {
 			List<ReservationStatus> excludedStatuses);
 
 	/**
+	 * Gets the number of reservations for the provided date range
+	 * 
+	 * @param bookingItemId ID of {@link BookingItem}
+	 * @param startRange start of the search range
+	 * @param endRange end of the search range
+	 * @param excludedStatuses List of excluded statuses
+	 * 
+	 * @return number of reservations within the provided range
+	 */
+	long getNumberOfReservations(
+			UUID bookingItemId, 
+			LocalDateTime startRange,
+			LocalDateTime endRange,
+			List<ReservationStatus> excludedStatuses);
+
+	/**
 	 * Updates reservation in DB if entry is found with the same reservation.id 
 	 * 
 	 * @param reservation source {@link Reservation} object to be used to update an entry in DB
@@ -61,6 +76,5 @@ public interface ReservationPersistenceService {
 	 * @return updated Reservation object from DB
 	 */
 	Reservation update(Reservation reservation);
-
 
 }
