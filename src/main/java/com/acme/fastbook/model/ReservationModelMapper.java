@@ -95,7 +95,7 @@ public abstract class ReservationModelMapper {
 	 * @return list of com.acme.fastbook.model.Reservation objects
 	 */
 	@IterableMapping(qualifiedByName = "mainMapperToReservation")
-	public abstract List<Reservation> mapToReservationList(List<ReservationEntity> source);
+	public abstract List<Reservation> mapListOfReservationEntitiesToReservations(List<ReservationEntity> source);
 	
 	@Named(value = "reservationToDateRange")
 	@Mapping(target = "startDate", source = "reservation.dateRange.startDate")
@@ -105,9 +105,25 @@ public abstract class ReservationModelMapper {
 	@IterableMapping(qualifiedByName = "reservationToDateRange")
 	public abstract List<DateRange> extractDateRanges(List<Reservation> reservations);
 	
+	/**
+	 * Maps com.acme.fastbook.model.ReservationStatus to
+	 * com.acme.fastbook.persistence.model.ReservationStatus
+	 * 
+	 * @param source com.acme.fastbook.model.ReservationStatus
+	 * 
+	 * @return com.acme.fastbook.persistence.model.ReservationStatus
+	 */
 	public abstract com.acme.fastbook.persistence.model.ReservationStatus mapReservationStatusToDbEntity(ReservationStatus source);
 	
-	public abstract List<com.acme.fastbook.persistence.model.ReservationStatus> mapToDbEntityStatuses(List<ReservationStatus> source);
+	/**
+	 * Maps list of com.acme.fastbook.model.ReservationStatus
+	 * to the list of com.acme.fastbook.persistence.model.ReservationStatus
+	 * 
+	 * @param source list of com.acme.fastbook.model.ReservationStatus
+	 * 
+	 * @return list of com.acme.fastbook.persistence.model.ReservationStatus
+	 */
+	public abstract List<com.acme.fastbook.persistence.model.ReservationStatus> mapListOfStatusesToDbEntityStatuses(List<ReservationStatus> source);
 	
 	/**
 	 * Presents java.util.UUID 
@@ -119,7 +135,7 @@ public abstract class ReservationModelMapper {
 	 * 
 	 * @return BookingItemEntity representation of UUID
 	 */
-    protected BookingItemEntity presentUuidAsBookingItemEntity(final UUID id) {
+    public BookingItemEntity presentUuidAsBookingItemEntity(final UUID id) {
 
         if (id == null) { return null; }
 
