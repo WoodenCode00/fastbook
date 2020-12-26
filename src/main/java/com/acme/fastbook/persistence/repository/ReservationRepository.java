@@ -20,6 +20,15 @@ import com.acme.fastbook.persistence.model.ReservationStatus;
  *
  */
 public interface ReservationRepository extends CrudRepository<ReservationEntity, UUID> {
+	
+	/**
+	 * Finds all {@link ReservationEntity} related related to {@code bookingItemId}
+	 * 
+	 * @param bookingItemId {@link BookingItemEntity} to search for
+	 * 
+	 * @return list of ReservationEntity
+	 */
+	List<ReservationEntity> findByBookingItemId(BookingItemEntity bookingItemId);
 
 	/**
 	 * Finds and returns all Reservations for the provided bookingItemId and within

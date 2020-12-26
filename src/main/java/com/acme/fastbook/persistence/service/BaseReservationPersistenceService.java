@@ -11,6 +11,7 @@ import com.acme.fastbook.exception.ReservationNotFoundException;
 import com.acme.fastbook.model.Reservation;
 import com.acme.fastbook.model.ReservationModelMapper;
 import com.acme.fastbook.model.ReservationStatus;
+import com.acme.fastbook.persistence.model.BookingItemEntity;
 import com.acme.fastbook.persistence.model.ReservationEntity;
 import com.acme.fastbook.persistence.repository.ReservationRepository;
 import com.acme.fastbook.utils.CopyUtils;
@@ -48,19 +49,19 @@ public class BaseReservationPersistenceService implements ReservationPersistence
 	public List<Reservation> findAllForBookingItemIdAndWithinDateRange(UUID bookingItemId, LocalDateTime startRange,
 			LocalDateTime endRange, List<ReservationStatus> excludedStatuses) {
 		
-		List<com.acme.fastbook.persistence.model.ReservationStatus> statusesAsDbEntities = modelMapper.mapToDbEntityStatuses(excludedStatuses);
+		List<com.acme.fastbook.persistence.model.ReservationStatus> statusesAsDbEntities = modelMapper.mapListOfStatusesToDbEntityStatuses(excludedStatuses);
 		
 		final List<ReservationEntity> entitiesDb = reservationRepository.findAllForBookingItemIdAndWithinDateRange(
 				bookingItemId, startRange, endRange, statusesAsDbEntities);
 		
-		return modelMapper.mapToReservationList(entitiesDb);
+		return modelMapper.mapListOfReservationEntitiesToReservations(entitiesDb);
 	}
 
 	@Override
 	public long getNumberOfReservations(UUID bookingItemId, LocalDateTime startRange, LocalDateTime endRange,
 			List<ReservationStatus> excludedStatuses) {
 		
-		List<com.acme.fastbook.persistence.model.ReservationStatus> statusesAsDbEntities = modelMapper.mapToDbEntityStatuses(excludedStatuses);
+		List<com.acme.fastbook.persistence.model.ReservationStatus> statusesAsDbEntities = modelMapper.mapListOfStatusesToDbEntityStatuses(excludedStatuses);
 
 		return reservationRepository.getNumberOfReservations(
 				bookingItemId, startRange, endRange, statusesAsDbEntities);
@@ -90,6 +91,15 @@ public class BaseReservationPersistenceService implements ReservationPersistence
 		
 		return modelMapper.mapToReservation(reservationEntity);
 
+	}
+
+	@Override
+	public List<Reservation> getAllReservationsForBookingItemId(UUID bookingItemId) {
+		
+		final BookingItemEntity bookingItemEntity = modelMapper.presentUuidAsBookingItemEntity(bookingItemId);
+		List<ReservationEntity> reservationsFromDb = reservationRepository.findByBookingItemId(bookingItemEntity);
+		
+		return modelMapper.mapListOfReservationEntitiesToReservations(reservationsFromDb);
 	}
 
 }

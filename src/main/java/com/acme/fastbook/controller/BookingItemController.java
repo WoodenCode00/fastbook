@@ -99,6 +99,22 @@ public class BookingItemController {
 	}
 	
 	/**
+	 * Gets a list of all {@link Reservation}-s for the given {@code bookingItemId}
+	 * 
+	 * @param bookingItemId booking item ID
+	 * 
+	 * @return list of found Reservations
+	 */
+	@GetMapping(value = "/{bookingItemId}/get-reservations", produces = "application/json")
+	public List<Reservation> getAllReservations(@PathVariable UUID bookingItemId) {
+		
+		final BookingItem bookingItem = bookingItemPersistenceService.findById(bookingItemId)
+				.orElseThrow(() -> new InvalidRequestException(String.format("BookingItem with id = [%s] is not found.", bookingItemId.toString())));
+		
+		return reservationPersistenceService.getAllReservationsForBookingItemId(bookingItem.getId());
+	}
+	
+	/**
 	 * Gets availability dates for a given bookingItemId
 	 * 
 	 * @param bookingItemId booking item ID

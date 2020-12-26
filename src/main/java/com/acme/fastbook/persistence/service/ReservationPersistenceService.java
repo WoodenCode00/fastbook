@@ -33,6 +33,15 @@ public interface ReservationPersistenceService {
 	 * @return {@link Reservation} object from DB
 	 */
 	Reservation getReservation(UUID id);
+	
+	/**
+	 * Gets all {@link Reservation}-s for the given {@code bookingItemId}
+	 * 
+	 * @param bookingItemId booking item ID to be searched for
+	 * 
+	 * @return .list of Reservation
+	 */
+	List<Reservation> getAllReservationsForBookingItemId(UUID bookingItemId);
 
 	/**
 	 * Finds all active reservations for provided Booking Item ID and range of dates. Reservations which
