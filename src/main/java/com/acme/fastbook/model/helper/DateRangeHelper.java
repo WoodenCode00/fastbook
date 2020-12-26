@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import com.acme.fastbook.model.DateRange;
 
@@ -22,11 +23,11 @@ public class DateRangeHelper {
 	/**
 	 * Transforms the list of reserved date ranges into the list of available date ranges
 	 * 
-	 * @param endRange 
-	 * @param startRange 
-	 * @param reservedRanges
+	 * @param startRange beginning of the search range
+	 * @param endRange end of the search range
+	 * @param reservedRanges list of reserved ranges
 	 * 
-	 * @return
+	 * @return list of available date ranges
 	 */
 	public static List<DateRange> transformReservedRangesIntoAvailableRanges(
 			final @NonNull LocalDateTime startRange,
@@ -39,8 +40,8 @@ public class DateRangeHelper {
 			final DateRange dateRange = new DateRange(startRange, endRange);
 			availabilityRanges.add(dateRange);
 		} else if (reservedRanges.size() == 1 // one DateRange that occupies the whole search range, that is, no days available
-				&& reservedRanges.get(0).getStartDate().isBefore(startRange)
-				&& reservedRanges.get(0).getEndDate().isAfter(endRange)) {
+				&& (reservedRanges.get(0).getStartDate().isBefore(startRange) || reservedRanges.get(0).getStartDate().equals(startRange))
+				&& (reservedRanges.get(0).getEndDate().isAfter(endRange) || reservedRanges.get(0).getEndDate().equals(endRange))) {
 			availabilityRanges = new ArrayList<>();
 		} else {
 			availabilityRanges = transformeAdvancedCase(startRange, endRange, reservedRanges);
@@ -49,6 +50,15 @@ public class DateRangeHelper {
 		return availabilityRanges;
 	}
 	
+	/**
+	 * Transforms a list reserved date ranges into the list of available date ranges
+	 * 
+	 * @param startRange beginning of the search range
+	 * @param endRange end of the search range
+	 * @param reservedRanges list of reserved ranges
+	 * 
+	 * @return list of available date ranges
+	 */
 	private static List<DateRange> transformeAdvancedCase(
 			LocalDateTime startRange,
 			LocalDateTime endRange,
@@ -72,18 +82,21 @@ public class DateRangeHelper {
 		}
 		
         Iterator<DateRange> iterator = reservedRangesExtended.iterator();
-		DateRange current = reservedRangesExtended.get(0);
+        DateRange current = null;
+        DateRange next = null;
 
 		while (iterator.hasNext()) {
+
+			// On the first run, take the value from iterator.next(), on consecutive runs, take the value from 'next' variable
+			current = (current == null) ? iterator.next() : next; 
+
 			LocalDateTime startDate = current.getEndDate();
-			
+
 			if (iterator.hasNext()) {
-				DateRange next = iterator.next();
+				next = iterator.next();
 				LocalDateTime endDate = next.getStartDate();
 				DateRange availabilityDate = new DateRange(startDate, endDate);
 				availabilityRanges.add(availabilityDate);
-				
-				current = next;
 			}
 		}
 
