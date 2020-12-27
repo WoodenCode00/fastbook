@@ -13,13 +13,19 @@ import com.acme.fastbook.exception.ReservationNotFoundException;
 import com.acme.fastbook.model.api.ErrorResponse;
 import com.acme.fastbook.model.api.ErrorStatus;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
- * Global exception handler
+ * Global exception handler.
+ * <p>
+ * Other exception handlers managed by Spring can be found in
+ * {@link ResponseEntityExceptionHandler} and {@link BasicErrorController}
  * 
- * @author Mykhaylo SYmulyk
+ * @author Mykhaylo Symulyk
  *
  */
 @ControllerAdvice
+@Slf4j
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 	
 	/**
@@ -34,7 +40,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     	
     	final ErrorResponse errorResponse = new ErrorResponse(ErrorStatus.RESOURCE_NOT_FOUND,
     			exception.getMessage());
-    	return handleException(errorResponse, HttpStatus.NOT_FOUND);
+    	return handleException(errorResponse, HttpStatus.NOT_FOUND, exception);
     }
     
     /**
@@ -49,11 +55,11 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     	
     	final ErrorResponse errorResponse = new ErrorResponse(ErrorStatus.BAD_REQUEST,
     			exception.getMessage());
-    	return handleException(errorResponse, HttpStatus.BAD_REQUEST);
+    	return handleException(errorResponse, HttpStatus.BAD_REQUEST, exception);
     }
     
     /**
-     * Handles generic unhandled exception
+     * Handles generic and unhandled exceptions
      * 
      * @param exception exception object
      * 
@@ -64,7 +70,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     	
     	final ErrorResponse errorResponse = new ErrorResponse(ErrorStatus.INTERNAL_SERVER_ERROR,
     			"Internal Server Error: Please contact support for more details.");
-    	return handleException(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    	return handleException(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR, exception);
     }
 
     /**
@@ -75,7 +81,11 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * 
      * @return error response to be returned to the client
      */
-	private ResponseEntity<ErrorResponse> handleException(final ErrorResponse errorResponse, final HttpStatus httpStatus) {
+	private ResponseEntity<ErrorResponse> handleException(
+			final ErrorResponse errorResponse,
+			final HttpStatus httpStatus,
+			final Exception exception) {
+		log.error(errorResponse.getMessage(), exception);
 		return new ResponseEntity<ErrorResponse>(errorResponse, httpStatus);
 	}
 
