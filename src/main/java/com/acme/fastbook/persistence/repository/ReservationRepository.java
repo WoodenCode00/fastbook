@@ -1,6 +1,6 @@
 package com.acme.fastbook.persistence.repository;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,8 +45,8 @@ public interface ReservationRepository extends CrudRepository<ReservationEntity,
 	@Query(SqlConstant.RESERVATIONS_SELECT_CLAUSE + SqlConstant.WITHIN_DATE_RANGE_WHERE_CLAUSE)
 	List<ReservationEntity> findAllForBookingItemIdAndWithinDateRange(
 			@Param("bookingItemId") UUID bookingItemId,
-			@Param("startRange") LocalDateTime startRange,
-			@Param("endRange") LocalDateTime endRange,
+			@Param("startRange") ZonedDateTime startRange,
+			@Param("endRange") ZonedDateTime endRange,
 			@Param("excludedStatuses") List<ReservationStatus> excludedStatuses
 	);
 
@@ -63,8 +63,8 @@ public interface ReservationRepository extends CrudRepository<ReservationEntity,
 	@Query(SqlConstant.COUNT_SELECT_CLAUSE + SqlConstant.WITHIN_DATE_RANGE_WHERE_CLAUSE)
 	long getNumberOfReservations(
 	    @Param("bookingItemId") UUID bookingItemId,
-	    @Param("startRange") LocalDateTime startRange,
-	    @Param("endRange") LocalDateTime endRange,
+	    @Param("startRange") ZonedDateTime startRange,
+	    @Param("endRange") ZonedDateTime endRange,
 	    @Param("excludedStatuses") List<ReservationStatus> excludedStatuses
 	);
 

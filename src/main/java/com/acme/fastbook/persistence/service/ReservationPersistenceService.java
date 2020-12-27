@@ -1,9 +1,10 @@
 package com.acme.fastbook.persistence.service;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import com.acme.fastbook.model.BookingItem;
 import com.acme.fastbook.model.Reservation;
 import com.acme.fastbook.model.ReservationStatus;
 
@@ -57,8 +58,8 @@ public interface ReservationPersistenceService {
 	 */
 	List<Reservation> findAllForBookingItemIdAndWithinDateRange(
 			UUID bookingItemId, 
-			LocalDateTime startRange,
-			LocalDateTime endRange,
+			ZonedDateTime startRange,
+			ZonedDateTime endRange,
 			List<ReservationStatus> excludedStatuses);
 
 	/**
@@ -73,8 +74,8 @@ public interface ReservationPersistenceService {
 	 */
 	long getNumberOfReservations(
 			UUID bookingItemId, 
-			LocalDateTime startRange,
-			LocalDateTime endRange,
+			ZonedDateTime startRange,
+			ZonedDateTime endRange,
 			List<ReservationStatus> excludedStatuses);
 
 	/**
