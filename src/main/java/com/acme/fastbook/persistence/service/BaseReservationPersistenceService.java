@@ -1,6 +1,6 @@
 package com.acme.fastbook.persistence.service;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,8 +46,8 @@ public class BaseReservationPersistenceService implements ReservationPersistence
 	}
 
 	@Override
-	public List<Reservation> findAllForBookingItemIdAndWithinDateRange(UUID bookingItemId, LocalDateTime startRange,
-			LocalDateTime endRange, List<ReservationStatus> excludedStatuses) {
+	public List<Reservation> findAllForBookingItemIdAndWithinDateRange(UUID bookingItemId, ZonedDateTime startRange,
+			ZonedDateTime endRange, List<ReservationStatus> excludedStatuses) {
 		
 		List<com.acme.fastbook.persistence.model.ReservationStatus> statusesAsDbEntities = modelMapper.mapListOfStatusesToDbEntityStatuses(excludedStatuses);
 		
@@ -58,7 +58,7 @@ public class BaseReservationPersistenceService implements ReservationPersistence
 	}
 
 	@Override
-	public long getNumberOfReservations(UUID bookingItemId, LocalDateTime startRange, LocalDateTime endRange,
+	public long getNumberOfReservations(UUID bookingItemId, ZonedDateTime startRange, ZonedDateTime endRange,
 			List<ReservationStatus> excludedStatuses) {
 		
 		List<com.acme.fastbook.persistence.model.ReservationStatus> statusesAsDbEntities = modelMapper.mapListOfStatusesToDbEntityStatuses(excludedStatuses);

@@ -2,7 +2,7 @@ package com.acme.fastbook.controller;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -129,9 +129,9 @@ public class BookingItemController {
 
 		int defaultSearchPeriod = fastBookConfig.getBookingItemConfig().getAvailabilityRangeDays();
 		
-		final LocalDateTime startRange = availabilityDatesRequest.getDateRange().getStartDate();
+		final ZonedDateTime startRange = availabilityDatesRequest.getDateRange().getStartDate();
 
-		final LocalDateTime endRange = Objects.nonNull(availabilityDatesRequest.getDateRange().getEndDate()) ?
+		final ZonedDateTime endRange = Objects.nonNull(availabilityDatesRequest.getDateRange().getEndDate()) ?
 				availabilityDatesRequest.getDateRange().getEndDate() : startRange.plusDays(defaultSearchPeriod); 
 
 		final List<ReservationStatus> excludeStatuses = Arrays.asList(ReservationStatus.CANCELLED);
@@ -158,7 +158,7 @@ public class BookingItemController {
 	 */
 	private void validateReservationOrThrow(final Reservation reservation) {
 		
-		final LocalDateTime currentTime = LocalDateTime.now();
+		final ZonedDateTime currentTime = ZonedDateTime.now();
 		
 		List<Validation<Reservation>> validations = new ArrayList<>();
 		

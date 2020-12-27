@@ -1,6 +1,6 @@
 package com.acme.fastbook.model;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import lombok.Data;
 
@@ -14,8 +14,8 @@ import lombok.Data;
 public class DateRange {
 	
 	/** Start of the date range */
-	private final LocalDateTime startDate;
+	private final ZonedDateTime startDate;
 	
 	/** End of the date range */
-	private final LocalDateTime endDate;
+	private final ZonedDateTime endDate;
 }

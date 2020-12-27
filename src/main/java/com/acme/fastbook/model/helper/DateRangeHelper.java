@@ -1,6 +1,6 @@
 package com.acme.fastbook.model.helper;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -29,8 +29,8 @@ public class DateRangeHelper {
 	 * @return list of available date ranges
 	 */
 	public static List<DateRange> transformReservedRangesIntoAvailableRanges(
-			final @NonNull LocalDateTime startRange,
-			final @NonNull LocalDateTime endRange,
+			final @NonNull ZonedDateTime startRange,
+			final @NonNull ZonedDateTime endRange,
 			final @NonNull List<DateRange> reservedRanges) {
 		
 		List<DateRange> availabilityRanges = new ArrayList<>();
@@ -59,8 +59,8 @@ public class DateRangeHelper {
 	 * @return list of available date ranges
 	 */
 	private static List<DateRange> transformeAdvancedCase(
-			LocalDateTime startRange,
-			LocalDateTime endRange,
+			ZonedDateTime startRange,
+			ZonedDateTime endRange,
 			List<DateRange> reservedRanges) {
 		
 		List<DateRange> availabilityRanges = new ArrayList<>();
@@ -89,11 +89,11 @@ public class DateRangeHelper {
 			// On the first run, take the value from iterator.next(), on consecutive runs, take the value from 'next' variable
 			current = (current == null) ? iterator.next() : next; 
 
-			LocalDateTime startDate = current.getEndDate();
+			ZonedDateTime startDate = current.getEndDate();
 
 			if (iterator.hasNext()) {
 				next = iterator.next();
-				LocalDateTime endDate = next.getStartDate();
+				ZonedDateTime endDate = next.getStartDate();
 				DateRange availabilityDate = new DateRange(startDate, endDate);
 				availabilityRanges.add(availabilityDate);
 			}

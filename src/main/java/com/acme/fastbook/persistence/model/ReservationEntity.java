@@ -1,7 +1,7 @@
 package com.acme.fastbook.persistence.model;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import javax.persistence.Entity;
@@ -49,10 +49,10 @@ public class ReservationEntity {
 	private String customerEmail;
 	
 	/** Start date of reservation */
-	private LocalDateTime startDate;
+	private ZonedDateTime startDate;
 	
 	/** End date of reservation */
-	private LocalDateTime endDate;
+	private ZonedDateTime endDate;
 	
 	/** Cost per day */
 	private BigDecimal dailyCost;
