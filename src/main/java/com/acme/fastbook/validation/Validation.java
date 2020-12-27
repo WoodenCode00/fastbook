@@ -45,7 +45,7 @@ public class Validation<T> {
 	 *         if validation returned true 
 	 */
 	public String validateAndGetErrorMessage(T arg) {
-		return rule.test(arg)? "" : this.errorMessage;
+		return rule.test(arg)? "" : this.errorMessage + "\n";
 	}
 
 }

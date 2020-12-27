@@ -30,7 +30,7 @@ public class ValidationRunner {
 		validations.stream()
 		    .forEach(validation -> errorMessages
 		    		.append(validation.validateAndGetErrorMessage(object))
-		    		.append("\n"));
+		           );
 		
 		return errorMessages.toString().trim();
 	}
