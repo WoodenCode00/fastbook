@@ -12,6 +12,8 @@ import com.acme.fastbook.model.BookingItemModelMapper;
 import com.acme.fastbook.persistence.model.BookingItemEntity;
 import com.acme.fastbook.persistence.repository.BookingItemRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Basic implementation of {@link BookingItemPersistenceService} interface
  * 
@@ -19,6 +21,7 @@ import com.acme.fastbook.persistence.repository.BookingItemRepository;
  *
  */
 @Service
+@Slf4j
 public class BaseBookingItemPersistenceService implements BookingItemPersistenceService {
 	
 	@Autowired
@@ -31,6 +34,7 @@ public class BaseBookingItemPersistenceService implements BookingItemPersistence
 	@Override
 	public BookingItem create(final BookingItem bookingItem) {
 		final BookingItemEntity entityDb = bookingItemRepository.save(modelMapper.mapToDbEntity(bookingItem));
+		log.info("BookingItem with ID = [{}] was created in DB.", bookingItem.getId());
 		return modelMapper.mapToBookingItem(entityDb);
 	}
 	

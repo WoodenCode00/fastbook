@@ -16,6 +16,8 @@ import com.acme.fastbook.persistence.model.ReservationEntity;
 import com.acme.fastbook.persistence.repository.ReservationRepository;
 import com.acme.fastbook.utils.CopyUtils;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Basic implementation of {@link ReservationPersistenceService} interface
  * 
@@ -23,6 +25,7 @@ import com.acme.fastbook.utils.CopyUtils;
  *
  */
 @Service
+@Slf4j
 public class BaseReservationPersistenceService implements ReservationPersistenceService {
 	
 	/** Error message to use when reservation is not found */
@@ -42,6 +45,7 @@ public class BaseReservationPersistenceService implements ReservationPersistence
 		final ReservationEntity reservationEntity = modelMapper.mapToDbEntity(reservation);
 		final ReservationEntity resultEntity = reservationRepository.save(reservationEntity);
 		
+		log.info("Reservation with ID = [{}] was created in DB.", reservation.getId().toString());
 		return modelMapper.mapToReservation(resultEntity);
 	}
 
@@ -80,6 +84,7 @@ public class BaseReservationPersistenceService implements ReservationPersistence
 
 		final ReservationEntity entity = reservationRepository.save(reservationToUpdate);
 		
+		log.info("Reservation with ID = [{}] was updated in DB.", reservation.getId().toString());
 		return modelMapper.mapToReservation(entity);
 	}
 
