@@ -6,5 +6,5 @@ VALUES (
  'Unique experience to live on the only campsite on new born island', 
  'Paradise Street, 1, Paradise Island, Pacific Ocean', 
  499.99, 
- '00:00',
+ '00:01',
  '00:00');

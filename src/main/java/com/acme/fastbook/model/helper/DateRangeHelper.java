@@ -1,10 +1,12 @@
 package com.acme.fastbook.model.helper;
 
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.acme.fastbook.model.BookingItem;
 import com.acme.fastbook.model.DateRange;
 
 import lombok.NonNull;
@@ -19,6 +21,29 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class DateRangeHelper {
 
+	/**
+	 * Adjusts start date and end date of reservation to account for checkin and checkout
+	 * times configured for the BookingItem
+	 * 
+	 * @param bookingItem {@link BookingItem} object
+	 * @param startDate start date
+	 * @param endDate end date
+	 * 
+	 * @return new {@link DateRange} object with adjusted Date-Time values
+	 */
+	public static DateRange adjustToCheckinCheckoutConfiguredTime(
+			final @NonNull BookingItem bookingItem,
+			final @NonNull ZonedDateTime startDate,
+			final @NonNull ZonedDateTime endDate) {
+
+		final LocalTime checkInTime = bookingItem.getCheckinTime();
+		final LocalTime checkOutTime = bookingItem.getCheckoutTime();
+		final ZonedDateTime adjustedStartDate = startDate.with(checkInTime);
+		final ZonedDateTime adjustedEndDate = endDate.with(checkOutTime);
+
+		return new DateRange(adjustedStartDate, adjustedEndDate);
+	}
+ 
 	/**
 	 * Transforms the list of reserved date ranges into the list of available date ranges
 	 * 

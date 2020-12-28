@@ -75,7 +75,7 @@ public class BaseReservationPersistenceService implements ReservationPersistence
 				bookingItemId, startRange, endRange, statusesAsDbEntities);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional
 	@Override
 	public Reservation update(final Reservation reservation) {
 		

@@ -1,6 +1,7 @@
 package com.acme.fastbook.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -12,9 +13,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.acme.fastbook.exception.BookingItemNotFoundException;
 import com.acme.fastbook.exception.InvalidRequestException;
+import com.acme.fastbook.model.BookingItem;
+import com.acme.fastbook.model.DateRange;
 import com.acme.fastbook.model.Reservation;
 import com.acme.fastbook.model.ReservationStatus;
+import com.acme.fastbook.model.helper.DateRangeHelper;
+import com.acme.fastbook.persistence.service.BookingItemPersistenceService;
 import com.acme.fastbook.persistence.service.ReservationPersistenceService;
 import com.acme.fastbook.validation.Validation;
 import com.acme.fastbook.validation.ValidationRunner;
@@ -26,6 +32,10 @@ public class ReservationController {
 	/** {@link ReservationPersistenceService} object */
 	@Autowired
 	private ReservationPersistenceService reservationPersistenceService;
+	
+	/** {@link BookingItemPersistenceService} object */
+	@Autowired
+	private BookingItemPersistenceService bookingItemPersistenceService;
 	
 	/**
 	 * Endpoint to cancel the reservation
@@ -55,7 +65,31 @@ public class ReservationController {
 	@PutMapping(value = "/{reservationId}/update", consumes = "application/json", produces = "application/json")
 	public Reservation updateReservation(@PathVariable UUID reservationId, @RequestBody Reservation reservation) {
 		
+		final List<ReservationStatus> statusesToExclude = Arrays.asList(ReservationStatus.CANCELLED);
+		
 		validateReservationForUpdateOrThrow(reservation);
+
+		// throw exception if reservation.status is in statusesToExclude list
+		final ReservationStatus currentStatus =  reservationPersistenceService.getReservation(reservationId)
+				.getReservationStatus();
+		
+		if (statusesToExclude.contains(currentStatus)) {
+			throw new InvalidRequestException(
+					String.format("Reservation with id = [%s] can not be updated because it has status [%s].", 
+							reservationId.toString(), currentStatus));
+		}
+		
+		// adjust new DateRange based on BookingItem checkin/checkout DB configured values
+		final UUID bookingItemId = reservationPersistenceService.getReservation(reservationId).getBookingItemId();
+		final BookingItem bookingItem = bookingItemPersistenceService.findById(bookingItemId)
+				.orElseThrow(() -> new BookingItemNotFoundException(
+						String.format("Update for Reservation with ID = [%s] failed: related BookingItem with ID = [%s] is not found.",
+								reservationId.toString(), bookingItemId.toString())));
+		
+		final DateRange adjustedDateRange = DateRangeHelper.adjustToCheckinCheckoutConfiguredTime(
+				bookingItem, reservation.getDateRange().getStartDate(), reservation.getDateRange().getEndDate());
+		
+		reservation.setDateRange(adjustedDateRange);
 		reservation.setId(reservationId);
 		
 		return reservationPersistenceService.update(reservation);
