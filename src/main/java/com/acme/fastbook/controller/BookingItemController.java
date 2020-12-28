@@ -71,30 +71,36 @@ public class BookingItemController {
 	 */
 	@PostMapping(value = "/{bookingItemId}/book", consumes = "application/json", produces = "application/json")
 	public Reservation newReservation(@PathVariable UUID bookingItemId, @RequestBody Reservation reservation) {
-		
+
 		final Optional<BookingItem> bookingItemOpt = bookingItemPersistenceService.findById(bookingItemId);
-		
+
 		if (!bookingItemOpt.isPresent()) {
 			throw new InvalidRequestException(String.format("BookingItem with id = [%s] is not found.", bookingItemId.toString()));
 		}
-		
+
 		validateReservationOrThrow(reservation);
-		
+
 		final BookingItem bookingItem = bookingItemOpt.get();
-		
+
 		// Calculate dailyCostWithReduction
 		// Formula: reduction = (reductionPercentage / 100) * baseDailyCost
 		final BigDecimal reduction = new BigDecimal(String.valueOf(fastBookConfig.getPromotionConfig().getReductionPercentage()))
 				.divide(HUNDRED)
 				.multiply(bookingItem.getBaseDailyCost());
-		
+
 		final BigDecimal dailyCostWithReduction = bookingItem.getBaseDailyCost().subtract(reduction);
-		
+
+		// Adjust start time and end time based on BookingItem checkin/checkout DB configured values
+		final DateRange adjustedDateRange = DateRangeHelper.adjustToCheckinCheckoutConfiguredTime(
+				bookingItem, reservation.getDateRange().getStartDate(), reservation.getDateRange().getEndDate());
+
+		// Setup Reservation fields
 		reservation.setId(UUID.randomUUID());
 		reservation.setBookingItemId(bookingItemId);
+		reservation.setDateRange(adjustedDateRange);
 		reservation.setReservationStatus(ReservationStatus.ACTIVE);
 		reservation.setDailyCost(dailyCostWithReduction.setScale(2, RoundingMode.DOWN));
-		
+
 		return ReservationService.checkAndCreate(reservationPersistenceService, reservation);
 	}
 	
@@ -126,26 +132,37 @@ public class BookingItemController {
 	public AvailabilityDatesResponse getAvailabilityDates(
 			@PathVariable UUID bookingItemId,
 			@RequestBody AvailabilityDatesRequest availabilityDatesRequest) {
+		
+		final Optional<BookingItem> bookingItemOpt = bookingItemPersistenceService.findById(bookingItemId);
+
+		if (!bookingItemOpt.isPresent()) {
+			throw new InvalidRequestException(String.format("BookingItem with id = [%s] is not found.", bookingItemId.toString()));
+		}
+		
+		final BookingItem bookingItem = bookingItemOpt.get();
 
 		int defaultSearchPeriod = fastBookConfig.getBookingItemConfig().getAvailabilityRangeDays();
 		
 		final ZonedDateTime startRange = availabilityDatesRequest.getDateRange().getStartDate();
 
 		final ZonedDateTime endRange = Objects.nonNull(availabilityDatesRequest.getDateRange().getEndDate()) ?
-				availabilityDatesRequest.getDateRange().getEndDate() : startRange.plusDays(defaultSearchPeriod); 
+				availabilityDatesRequest.getDateRange().getEndDate() : startRange.plusDays(defaultSearchPeriod);
+				
+		// Adjust search range based on BookingItem checkin/checkout DB configured values
+		final DateRange adjustedDateRange = DateRangeHelper.adjustToCheckinCheckoutConfiguredTime(bookingItem, startRange, endRange);
 
 		final List<ReservationStatus> excludeStatuses = Arrays.asList(ReservationStatus.CANCELLED);
 
 		final List<Reservation> reservations = reservationPersistenceService.findAllForBookingItemIdAndWithinDateRange(
 				bookingItemId, 
-				availabilityDatesRequest.getDateRange().getStartDate(), 
-				endRange, 
+				adjustedDateRange.getStartDate(), 
+				adjustedDateRange.getEndDate(), 
 				excludeStatuses);
 
 		final List<DateRange> reservedRanges = reservationModelMapper.extractDateRanges(reservations);
 
 		final List<DateRange> availableRanges = DateRangeHelper.transformReservedRangesIntoAvailableRanges(
-				startRange, endRange, reservedRanges);
+				adjustedDateRange.getStartDate(), adjustedDateRange.getEndDate(), reservedRanges);
 		
 		return new AvailabilityDatesResponse(bookingItemId, availableRanges);
 	}
