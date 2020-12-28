@@ -116,6 +116,16 @@ public abstract class ReservationModelMapper {
 	public abstract com.acme.fastbook.persistence.model.ReservationStatus mapReservationStatusToDbEntity(ReservationStatus source);
 	
 	/**
+	 * Maps com.acme.fastbook.persistence.model.ReservationStatus to
+	 * com.acme.fastbook.model.ReservationStatus
+	 * 
+	 * @param source com.acme.fastbook.persistence.model.ReservationStatus
+	 * 
+	 * @return com.acme.fastbook.model.ReservationStatus
+	 */
+	public abstract ReservationStatus mapDbEntityReservationStatusToReservationStatus(com.acme.fastbook.persistence.model.ReservationStatus source);
+	
+	/**
 	 * Maps list of com.acme.fastbook.model.ReservationStatus
 	 * to the list of com.acme.fastbook.persistence.model.ReservationStatus
 	 * 
