@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.acme.fastbook.exception.ReservationNotFoundException;
 import com.acme.fastbook.model.Reservation;
@@ -39,6 +40,7 @@ public class BaseReservationPersistenceService implements ReservationPersistence
 	@Autowired
 	private ReservationRepository reservationRepository;
 
+	@Transactional
 	@Override
 	public Reservation create(final Reservation reservation) {
 
@@ -49,6 +51,7 @@ public class BaseReservationPersistenceService implements ReservationPersistence
 		return modelMapper.mapToReservation(resultEntity);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public List<Reservation> findAllForBookingItemIdAndWithinDateRange(UUID bookingItemId, ZonedDateTime startRange,
 			ZonedDateTime endRange, List<ReservationStatus> excludedStatuses) {
@@ -61,6 +64,7 @@ public class BaseReservationPersistenceService implements ReservationPersistence
 		return modelMapper.mapListOfReservationEntitiesToReservations(entitiesDb);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public long getNumberOfReservations(UUID bookingItemId, ZonedDateTime startRange, ZonedDateTime endRange,
 			List<ReservationStatus> excludedStatuses) {
@@ -71,6 +75,7 @@ public class BaseReservationPersistenceService implements ReservationPersistence
 				bookingItemId, startRange, endRange, statusesAsDbEntities);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public Reservation update(final Reservation reservation) {
 		
@@ -88,6 +93,7 @@ public class BaseReservationPersistenceService implements ReservationPersistence
 		return modelMapper.mapToReservation(entity);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public Reservation getReservation(UUID id) {
 		ReservationEntity reservationEntity = reservationRepository.findById(id)
@@ -98,6 +104,7 @@ public class BaseReservationPersistenceService implements ReservationPersistence
 
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public List<Reservation> getAllReservationsForBookingItemId(UUID bookingItemId) {
 		

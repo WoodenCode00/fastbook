@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.acme.fastbook.model.BookingItem;
 import com.acme.fastbook.model.BookingItemModelMapper;
@@ -31,6 +32,7 @@ public class BaseBookingItemPersistenceService implements BookingItemPersistence
 	@Autowired
 	private BookingItemRepository bookingItemRepository;
 	
+	@Transactional
 	@Override
 	public BookingItem create(final BookingItem bookingItem) {
 		final BookingItemEntity entityDb = bookingItemRepository.save(modelMapper.mapToDbEntity(bookingItem));
@@ -38,6 +40,7 @@ public class BaseBookingItemPersistenceService implements BookingItemPersistence
 		return modelMapper.mapToBookingItem(entityDb);
 	}
 	
+	@Transactional(readOnly = true)
 	@Override
 	public Optional<BookingItem> findById(UUID id) {
 		
@@ -47,6 +50,7 @@ public class BaseBookingItemPersistenceService implements BookingItemPersistence
 				Optional.ofNullable(modelMapper.mapToBookingItem(bookingItemEntityOpt.get())) : Optional.empty();
 	}
 	
+	@Transactional(readOnly = true)
 	@Override
 	public List<BookingItem> findAll(){
 		return modelMapper.mapToBookingItemList(bookingItemRepository.findAll());
