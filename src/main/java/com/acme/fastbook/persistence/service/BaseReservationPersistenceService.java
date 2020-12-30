@@ -48,7 +48,7 @@ public class BaseReservationPersistenceService implements ReservationPersistence
 
 	@Transactional
 	@Override
-	public Reservation checkDatesAndCreate(final @NonNull Reservation reservation, final List<ReservationStatus> excludedStatuses) {
+	public synchronized Reservation checkDatesAndCreate(final @NonNull Reservation reservation, final List<ReservationStatus> excludedStatuses) {
 
 		long nbReservations = getNumberOfReservations(
 				reservation.getBookingItemId(),
@@ -71,7 +71,7 @@ public class BaseReservationPersistenceService implements ReservationPersistence
 	 */
 	@Transactional
 	@Override
-	public Reservation checkDatesAndUpdate(final @NonNull Reservation newReservation, final List<ReservationStatus> excludedStatuses) {
+	public synchronized Reservation checkDatesAndUpdate(final @NonNull Reservation newReservation, final List<ReservationStatus> excludedStatuses) {
 
 		final UUID reservationId = newReservation.getId();
 		final Reservation reservationFromDb = getReservation(reservationId);
