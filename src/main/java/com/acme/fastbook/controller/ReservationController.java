@@ -26,9 +26,18 @@ import com.acme.fastbook.persistence.service.ReservationPersistenceService;
 import com.acme.fastbook.validation.Validation;
 import com.acme.fastbook.validation.ValidationRunner;
 
+/**
+ * Controller for requests related to Reservation processing
+ * 
+ * @author Mykhaylo Symulyk
+ *
+ */
 @RestController
 @RequestMapping(ControllerConstants.BASE_APP_PATH + "/reservation")
 public class ReservationController {
+  
+  /** List of statuses to be excluded from update operation */
+  private static final List<ReservationStatus> EXCLUDED_STATUSES_FOR_UPDATE = Arrays.asList(ReservationStatus.CANCELLED);
 
   /** {@link ReservationPersistenceService} object */
   @Autowired
@@ -66,8 +75,6 @@ public class ReservationController {
   @PutMapping(value = "/{reservationId}/update", consumes = "application/json", produces = "application/json")
   public Reservation updateReservation(@PathVariable UUID reservationId, @RequestBody Reservation reservation) {
 
-    final List<ReservationStatus> statusesToExclude = Arrays.asList(ReservationStatus.CANCELLED);
-
     validateReservationForUpdateOrThrow(reservation);
 
     // adjust new DateRange based on BookingItem checkin/checkout DB configured
@@ -84,7 +91,7 @@ public class ReservationController {
     reservation.setId(reservationId);
     reservation.setDateRange(adjustedDateRange);
 
-    return reservationPersistenceService.checkDatesAndUpdate(reservation, statusesToExclude);
+    return reservationPersistenceService.checkDatesAndUpdate(reservation, EXCLUDED_STATUSES_FOR_UPDATE);
   }
 
   /**
