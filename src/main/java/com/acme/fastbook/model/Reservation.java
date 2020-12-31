@@ -18,25 +18,25 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Reservation {
 
-	/** Reservation unique id */
-	private UUID id;
-	
-	/** Booking Item ID */
-    private UUID bookingItemId;
-	
-	/** Status of the reservation */
-	private ReservationStatus reservationStatus;
-	
-	/** Customer name */
-	private String customerName;
-	
-	/** Customer email */
-	private String customerEmail;
-	
-	/** Period of reservation */
-	private DateRange dateRange;
-	
-	/** Cost per day */
-	private BigDecimal dailyCost;
+  /** Reservation unique id */
+  private UUID id;
+
+  /** Booking Item ID */
+  private UUID bookingItemId;
+
+  /** Status of the reservation */
+  private ReservationStatus reservationStatus;
+
+  /** Customer name */
+  private String customerName;
+
+  /** Customer email */
+  private String customerEmail;
+
+  /** Period of reservation */
+  private DateRange dateRange;
+
+  /** Cost per day */
+  private BigDecimal dailyCost;
 
 }

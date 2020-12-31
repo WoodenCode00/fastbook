@@ -43,198 +43,197 @@ import com.acme.fastbook.validation.ValidationRunner;
 @RestController
 @RequestMapping(ControllerConstants.BASE_APP_PATH + "/booking-item")
 public class BookingItemController {
-	
-	/** Hundred (100) as BigDecimal */
-	private static final BigDecimal HUNDRED = new BigDecimal("100");
-	
-	/** {@link ReservationPersistenceService} object */
-	@Autowired
-	private ReservationPersistenceService reservationPersistenceService;
-	
-	/** {@link BookingItemPersistenceService} object */
-	@Autowired
-	private BookingItemPersistenceService bookingItemPersistenceService;
-	
-	/** Application configuration object */
-	@Autowired
-	private FastBookConfig fastBookConfig;
-	
-	/** Mapper for {@link Reservation} class */
-	@Autowired
-	private ReservationModelMapper reservationModelMapper;
-	
-	/**
-	 * Endpoint to submit a new reservation
-	 * 
-	 * @return {@link Reservation} object
-	 */
-	@PostMapping(value = "/{bookingItemId}/book", consumes = "application/json", produces = "application/json")
-	public Reservation newReservation(@PathVariable UUID bookingItemId, @RequestBody Reservation reservation) {
 
-		final Optional<BookingItem> bookingItemOpt = bookingItemPersistenceService.findById(bookingItemId);
+  /** Hundred (100) as BigDecimal */
+  private static final BigDecimal HUNDRED = new BigDecimal("100");
 
-		if (!bookingItemOpt.isPresent()) {
-			throw new InvalidRequestException(String.format("BookingItem with id = [%s] is not found.", bookingItemId.toString()));
-		}
+  /** {@link ReservationPersistenceService} object */
+  @Autowired
+  private ReservationPersistenceService reservationPersistenceService;
 
-		validateReservationOrThrow(reservation);
+  /** {@link BookingItemPersistenceService} object */
+  @Autowired
+  private BookingItemPersistenceService bookingItemPersistenceService;
 
-		final BookingItem bookingItem = bookingItemOpt.get();
+  /** Application configuration object */
+  @Autowired
+  private FastBookConfig fastBookConfig;
 
-		// Calculate dailyCostWithReduction
-		// Formula: reduction = (reductionPercentage / 100) * baseDailyCost
-		final BigDecimal reduction = new BigDecimal(String.valueOf(fastBookConfig.getPromotionConfig().getReductionPercentage()))
-				.divide(HUNDRED)
-				.multiply(bookingItem.getBaseDailyCost());
+  /** Mapper for {@link Reservation} class */
+  @Autowired
+  private ReservationModelMapper reservationModelMapper;
 
-		final BigDecimal dailyCostWithReduction = bookingItem.getBaseDailyCost().subtract(reduction);
+  /**
+   * Endpoint to submit a new reservation
+   * 
+   * @return {@link Reservation} object
+   */
+  @PostMapping(value = "/{bookingItemId}/book", consumes = "application/json", produces = "application/json")
+  public Reservation newReservation(@PathVariable UUID bookingItemId, @RequestBody Reservation reservation) {
 
-		// Adjust start time and end time based on BookingItem checkin/checkout DB configured values
-		final DateRange adjustedDateRange = DateRangeHelper.adjustToCheckinCheckoutConfiguredTime(
-				bookingItem, reservation.getDateRange().getStartDate(), reservation.getDateRange().getEndDate());
+    final Optional<BookingItem> bookingItemOpt = bookingItemPersistenceService.findById(bookingItemId);
 
-		// Setup Reservation fields
-		reservation.setId(UUID.randomUUID());
-		reservation.setBookingItemId(bookingItemId);
-		reservation.setDateRange(adjustedDateRange);
-		reservation.setReservationStatus(ReservationStatus.ACTIVE);
-		reservation.setDailyCost(dailyCostWithReduction.setScale(2, RoundingMode.DOWN));
+    if (!bookingItemOpt.isPresent()) {
+      throw new InvalidRequestException(
+          String.format("BookingItem with id = [%s] is not found.", bookingItemId.toString()));
+    }
 
-		return reservationPersistenceService.checkDatesAndCreate(reservation, Arrays.asList(ReservationStatus.CANCELLED));
-	}
-	
-	/**
-	 * Gets a list of all {@link Reservation}-s for the given {@code bookingItemId}
-	 * 
-	 * @param bookingItemId booking item ID
-	 * 
-	 * @return list of found Reservations
-	 */
-	@GetMapping(value = "/{bookingItemId}/get-reservations", produces = "application/json")
-	public List<Reservation> getAllReservations(@PathVariable UUID bookingItemId) {
-		
-		final BookingItem bookingItem = bookingItemPersistenceService.findById(bookingItemId)
-				.orElseThrow(() -> new InvalidRequestException(String.format("BookingItem with id = [%s] is not found.", bookingItemId.toString())));
-		
-		return reservationPersistenceService.getAllReservationsForBookingItemId(bookingItem.getId());
-	}
-	
-	/**
-	 * Gets availability dates for a given bookingItemId
-	 * 
-	 * @param bookingItemId booking item ID
-	 * @param availabilityDatesRequest request object
-	 * 
-	 * @return response with the list of available dates
-	 */
-	@GetMapping(value = "/{bookingItemId}/get-availability-dates", consumes = "application/json", produces = "application/json")
-	public AvailabilityDatesResponse getAvailabilityDates(
-			@PathVariable UUID bookingItemId,
-			@RequestBody AvailabilityDatesRequest availabilityDatesRequest) {
-		
-		final Optional<BookingItem> bookingItemOpt = bookingItemPersistenceService.findById(bookingItemId);
+    validateReservationOrThrow(reservation);
 
-		if (!bookingItemOpt.isPresent()) {
-			throw new InvalidRequestException(String.format("BookingItem with id = [%s] is not found.", bookingItemId.toString()));
-		}
-		
-		final BookingItem bookingItem = bookingItemOpt.get();
+    final BookingItem bookingItem = bookingItemOpt.get();
 
-		int defaultSearchPeriod = fastBookConfig.getBookingItemConfig().getAvailabilityRangeDays();
-		
-		final ZonedDateTime startRange = availabilityDatesRequest.getDateRange().getStartDate();
+    // Calculate dailyCostWithReduction
+    // Formula: reduction = (reductionPercentage / 100) * baseDailyCost
+    final BigDecimal reduction = new BigDecimal(
+        String.valueOf(fastBookConfig.getPromotionConfig().getReductionPercentage())).divide(HUNDRED)
+            .multiply(bookingItem.getBaseDailyCost());
 
-		final ZonedDateTime endRange = Objects.nonNull(availabilityDatesRequest.getDateRange().getEndDate()) ?
-				availabilityDatesRequest.getDateRange().getEndDate() : startRange.plusDays(defaultSearchPeriod);
-				
-		// Adjust search range based on BookingItem checkin/checkout DB configured values
-		final DateRange adjustedDateRange = DateRangeHelper.adjustToCheckinCheckoutConfiguredTime(bookingItem, startRange, endRange);
+    final BigDecimal dailyCostWithReduction = bookingItem.getBaseDailyCost().subtract(reduction);
 
-		final List<ReservationStatus> excludeStatuses = Arrays.asList(ReservationStatus.CANCELLED);
+    // Adjust start time and end time based on BookingItem checkin/checkout DB
+    // configured values
+    final DateRange adjustedDateRange = DateRangeHelper.adjustToCheckinCheckoutConfiguredTime(bookingItem,
+        reservation.getDateRange().getStartDate(), reservation.getDateRange().getEndDate());
 
-		final List<Reservation> reservations = reservationPersistenceService.findAllForBookingItemIdAndWithinDateRange(
-				bookingItemId, 
-				adjustedDateRange.getStartDate(), 
-				adjustedDateRange.getEndDate(), 
-				excludeStatuses);
+    // Setup Reservation fields
+    reservation.setId(UUID.randomUUID());
+    reservation.setBookingItemId(bookingItemId);
+    reservation.setDateRange(adjustedDateRange);
+    reservation.setReservationStatus(ReservationStatus.ACTIVE);
+    reservation.setDailyCost(dailyCostWithReduction.setScale(2, RoundingMode.DOWN));
 
-		final List<DateRange> reservedRanges = reservationModelMapper.extractDateRanges(reservations);
+    return reservationPersistenceService.checkDatesAndCreate(reservation, Arrays.asList(ReservationStatus.CANCELLED));
+  }
 
-		final List<DateRange> availableRanges = DateRangeHelper.transformReservedRangesIntoAvailableRanges(
-				adjustedDateRange.getStartDate(), adjustedDateRange.getEndDate(), reservedRanges);
-		
-		return new AvailabilityDatesResponse(bookingItemId, availableRanges);
-	}
+  /**
+   * Gets a list of all {@link Reservation}-s for the given {@code bookingItemId}
+   * 
+   * @param bookingItemId booking item ID
+   * 
+   * @return list of found Reservations
+   */
+  @GetMapping(value = "/{bookingItemId}/get-reservations", produces = "application/json")
+  public List<Reservation> getAllReservations(@PathVariable UUID bookingItemId) {
 
-	/**
-	 * Validates constraints on {@link Reservation} object and throws an exception
-	 * if at least one of the validation failed.
-	 * 
-	 * @param reservation Reservation object to be validated
-	 */
-	private void validateReservationOrThrow(final Reservation reservation) {
-		
-		final ZonedDateTime currentTime = ZonedDateTime.now();
-		
-		List<Validation<Reservation>> validations = new ArrayList<>();
-		
-		// Add validations to the list
-		validations.add(new Validation<>(
-				res -> Objects.nonNull(res.getCustomerName()), 
-				"Property reservation.customerName must not be Null."));
-		validations.add(new Validation<>(
-				res -> Objects.nonNull(res.getCustomerEmail()),
-				"Property reservation.customerEmail must not be Null."));
-		validations.add(new Validation<>(
-				res -> Objects.nonNull(res.getDateRange().getStartDate()),
-				"Property reservation.startDate must not be Null."));
-		validations.add(new Validation<>(
-				res -> Objects.nonNull(res.getDateRange().getEndDate()),
-				"Property reservation.endDate must not be Null."));
-		
-		// if startDate is present, do below validations
-		if (Objects.nonNull(reservation.getDateRange().getStartDate())) {
-			// check if startDate is not in the past
-			validations.add(new Validation<>(
-					res -> res.getDateRange().getStartDate().isAfter(currentTime),
-					"Property reservation.startDate must not be in the past."));
-			
-			// check if startDate is within minimum advance reservation days
-			final int minAdvanceDays = fastBookConfig.getReservationConfig().getMinAdvanceDays();
-			validations.add(new Validation<>(
-					res -> ChronoUnit.DAYS.between(currentTime, res.getDateRange().getStartDate()) >= minAdvanceDays,
-					"Reservation.startDate must be at least " + minAdvanceDays + " day(s) in advance."));
-			
-			// check if startDate is within maximum advance reservation days
-			final int maxAdvanceDays = fastBookConfig.getReservationConfig().getMaxAdvanceDays();
-			validations.add(new Validation<>(
-					res -> ChronoUnit.DAYS.between(currentTime, res.getDateRange().getStartDate()) <= maxAdvanceDays,
-					"Reservation.startDate must not be more than " + maxAdvanceDays + " day(s) in advance."));
-			
-		}
-		
-		// check if startDate is not in the past
-		if (Objects.nonNull(reservation.getDateRange().getEndDate())) {
-			validations.add(new Validation<>(
-					res -> res.getDateRange().getEndDate().isAfter(currentTime),
-					"Property reservation.endDate must not be in the past."));
-		}
-		
-		// check if stay period is not beyond the max value
-		if (Objects.nonNull(reservation.getDateRange().getStartDate()) && Objects.nonNull(reservation.getDateRange().getEndDate())) {
-			final int maxStayPeriod = fastBookConfig.getReservationConfig().getMaxPeriodDays();
-			
-			validations.add(new Validation<>(
-					res -> ChronoUnit.DAYS.between(res.getDateRange().getStartDate(), res.getDateRange().getEndDate()) <= maxStayPeriod,
-					"Property reservation.endDate is beyond maximum stay period " + maxStayPeriod + " days."));
-		}
-		
-		// Run all validations
-		final String errorMessages = ValidationRunner.runValidations(reservation, validations);
-		
-		if (!errorMessages.isEmpty()) {
-			throw new InvalidRequestException(errorMessages);
-		}
-	}
-	
+    final BookingItem bookingItem = bookingItemPersistenceService.findById(bookingItemId)
+        .orElseThrow(() -> new InvalidRequestException(
+            String.format("BookingItem with id = [%s] is not found.", bookingItemId.toString())));
+
+    return reservationPersistenceService.getAllReservationsForBookingItemId(bookingItem.getId());
+  }
+
+  /**
+   * Gets availability dates for a given bookingItemId
+   * 
+   * @param bookingItemId            booking item ID
+   * @param availabilityDatesRequest request object
+   * 
+   * @return response with the list of available dates
+   */
+  @GetMapping(value = "/{bookingItemId}/get-availability-dates", consumes = "application/json", produces = "application/json")
+  public AvailabilityDatesResponse getAvailabilityDates(@PathVariable UUID bookingItemId,
+      @RequestBody AvailabilityDatesRequest availabilityDatesRequest) {
+
+    final Optional<BookingItem> bookingItemOpt = bookingItemPersistenceService.findById(bookingItemId);
+
+    if (!bookingItemOpt.isPresent()) {
+      throw new InvalidRequestException(
+          String.format("BookingItem with id = [%s] is not found.", bookingItemId.toString()));
+    }
+
+    final BookingItem bookingItem = bookingItemOpt.get();
+
+    int defaultSearchPeriod = fastBookConfig.getBookingItemConfig().getAvailabilityRangeDays();
+
+    final ZonedDateTime startRange = availabilityDatesRequest.getDateRange().getStartDate();
+
+    final ZonedDateTime endRange = Objects.nonNull(availabilityDatesRequest.getDateRange().getEndDate())
+        ? availabilityDatesRequest.getDateRange().getEndDate()
+        : startRange.plusDays(defaultSearchPeriod);
+
+    // Adjust search range based on BookingItem checkin/checkout DB configured
+    // values
+    final DateRange adjustedDateRange = DateRangeHelper.adjustToCheckinCheckoutConfiguredTime(bookingItem, startRange,
+        endRange);
+
+    final List<ReservationStatus> excludeStatuses = Arrays.asList(ReservationStatus.CANCELLED);
+
+    final List<Reservation> reservations = reservationPersistenceService.findAllForBookingItemIdAndWithinDateRange(
+        bookingItemId, adjustedDateRange.getStartDate(), adjustedDateRange.getEndDate(), excludeStatuses);
+
+    final List<DateRange> reservedRanges = reservationModelMapper.extractDateRanges(reservations);
+
+    final List<DateRange> availableRanges = DateRangeHelper.transformReservedRangesIntoAvailableRanges(
+        adjustedDateRange.getStartDate(), adjustedDateRange.getEndDate(), reservedRanges);
+
+    return new AvailabilityDatesResponse(bookingItemId, availableRanges);
+  }
+
+  /**
+   * Validates constraints on {@link Reservation} object and throws an exception
+   * if at least one of the validation failed.
+   * 
+   * @param reservation Reservation object to be validated
+   */
+  private void validateReservationOrThrow(final Reservation reservation) {
+
+    final ZonedDateTime currentTime = ZonedDateTime.now();
+
+    List<Validation<Reservation>> validations = new ArrayList<>();
+
+    // Add validations to the list
+    validations.add(new Validation<>(res -> Objects.nonNull(res.getCustomerName()),
+        "Property reservation.customerName must not be Null."));
+    validations.add(new Validation<>(res -> Objects.nonNull(res.getCustomerEmail()),
+        "Property reservation.customerEmail must not be Null."));
+    validations.add(new Validation<>(res -> Objects.nonNull(res.getDateRange().getStartDate()),
+        "Property reservation.startDate must not be Null."));
+    validations.add(new Validation<>(res -> Objects.nonNull(res.getDateRange().getEndDate()),
+        "Property reservation.endDate must not be Null."));
+
+    // if startDate is present, do below validations
+    if (Objects.nonNull(reservation.getDateRange().getStartDate())) {
+      // check if startDate is not in the past
+      validations.add(new Validation<>(res -> res.getDateRange().getStartDate().isAfter(currentTime),
+          "Property reservation.startDate must not be in the past."));
+
+      // check if startDate is within minimum advance reservation days
+      final int minAdvanceDays = fastBookConfig.getReservationConfig().getMinAdvanceDays();
+      validations.add(new Validation<>(
+          res -> ChronoUnit.DAYS.between(currentTime, res.getDateRange().getStartDate()) >= minAdvanceDays,
+          "Reservation.startDate must be at least " + minAdvanceDays + " day(s) in advance."));
+
+      // check if startDate is within maximum advance reservation days
+      final int maxAdvanceDays = fastBookConfig.getReservationConfig().getMaxAdvanceDays();
+      validations.add(new Validation<>(
+          res -> ChronoUnit.DAYS.between(currentTime, res.getDateRange().getStartDate()) <= maxAdvanceDays,
+          "Reservation.startDate must not be more than " + maxAdvanceDays + " day(s) in advance."));
+
+    }
+
+    // check if startDate is not in the past
+    if (Objects.nonNull(reservation.getDateRange().getEndDate())) {
+      validations.add(new Validation<>(res -> res.getDateRange().getEndDate().isAfter(currentTime),
+          "Property reservation.endDate must not be in the past."));
+    }
+
+    // check if stay period is not beyond the max value
+    if (Objects.nonNull(reservation.getDateRange().getStartDate())
+        && Objects.nonNull(reservation.getDateRange().getEndDate())) {
+      final int maxStayPeriod = fastBookConfig.getReservationConfig().getMaxPeriodDays();
+
+      validations.add(new Validation<>(
+          res -> ChronoUnit.DAYS.between(res.getDateRange().getStartDate(),
+              res.getDateRange().getEndDate()) <= maxStayPeriod,
+          "Property reservation.endDate is beyond maximum stay period " + maxStayPeriod + " days."));
+    }
+
+    // Run all validations
+    final String errorMessages = ValidationRunner.runValidations(reservation, validations);
+
+    if (!errorMessages.isEmpty()) {
+      throw new InvalidRequestException(errorMessages);
+    }
+  }
+
 }

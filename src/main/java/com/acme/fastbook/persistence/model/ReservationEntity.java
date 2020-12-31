@@ -28,32 +28,32 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReservationEntity {
-	
-	/** Reservation unique id */
-	@Id
-	private UUID id;
-	
-	/** Booking Item ID */
-	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "booking_item_id")
-    private BookingItemEntity bookingItemId;
-	
-	/** Status of the reservation */
-	@Enumerated(EnumType.STRING)
-	private ReservationStatus reservationStatus;
-	
-	/** Customer name */
-	private String customerName;
-	
-	/** Customer email */
-	private String customerEmail;
-	
-	/** Start date of reservation */
-	private ZonedDateTime startDate;
-	
-	/** End date of reservation */
-	private ZonedDateTime endDate;
-	
-	/** Cost per day */
-	private BigDecimal dailyCost;
+
+  /** Reservation unique id */
+  @Id
+  private UUID id;
+
+  /** Booking Item ID */
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "booking_item_id")
+  private BookingItemEntity bookingItemId;
+
+  /** Status of the reservation */
+  @Enumerated(EnumType.STRING)
+  private ReservationStatus reservationStatus;
+
+  /** Customer name */
+  private String customerName;
+
+  /** Customer email */
+  private String customerEmail;
+
+  /** Start date of reservation */
+  private ZonedDateTime startDate;
+
+  /** End date of reservation */
+  private ZonedDateTime endDate;
+
+  /** Cost per day */
+  private BigDecimal dailyCost;
 }

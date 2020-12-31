@@ -24,36 +24,37 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class BaseBookingItemPersistenceService implements BookingItemPersistenceService {
-	
-	@Autowired
-	private BookingItemModelMapper modelMapper;
-	
-	/** {@link BookingItemRepository} bean */
-	@Autowired
-	private BookingItemRepository bookingItemRepository;
-	
-	@Transactional
-	@Override
-	public BookingItem create(final BookingItem bookingItem) {
-		final BookingItemEntity entityDb = bookingItemRepository.save(modelMapper.mapToDbEntity(bookingItem));
-		log.info("BookingItem with ID = [{}] was created in DB.", bookingItem.getId());
-		return modelMapper.mapToBookingItem(entityDb);
-	}
-	
-	@Transactional(readOnly = true)
-	@Override
-	public Optional<BookingItem> findById(UUID id) {
-		
-		Optional<BookingItemEntity> bookingItemEntityOpt = bookingItemRepository.findById(id);
-		
-		return bookingItemEntityOpt.isPresent() ? 
-				Optional.ofNullable(modelMapper.mapToBookingItem(bookingItemEntityOpt.get())) : Optional.empty();
-	}
-	
-	@Transactional(readOnly = true)
-	@Override
-	public List<BookingItem> findAll(){
-		return modelMapper.mapToBookingItemList(bookingItemRepository.findAll());
-	}
+
+  @Autowired
+  private BookingItemModelMapper modelMapper;
+
+  /** {@link BookingItemRepository} bean */
+  @Autowired
+  private BookingItemRepository bookingItemRepository;
+
+  @Transactional
+  @Override
+  public BookingItem create(final BookingItem bookingItem) {
+    final BookingItemEntity entityDb = bookingItemRepository.save(modelMapper.mapToDbEntity(bookingItem));
+    log.info("BookingItem with ID = [{}] was created in DB.", bookingItem.getId());
+    return modelMapper.mapToBookingItem(entityDb);
+  }
+
+  @Transactional(readOnly = true)
+  @Override
+  public Optional<BookingItem> findById(UUID id) {
+
+    Optional<BookingItemEntity> bookingItemEntityOpt = bookingItemRepository.findById(id);
+
+    return bookingItemEntityOpt.isPresent()
+        ? Optional.ofNullable(modelMapper.mapToBookingItem(bookingItemEntityOpt.get()))
+        : Optional.empty();
+  }
+
+  @Transactional(readOnly = true)
+  @Override
+  public List<BookingItem> findAll() {
+    return modelMapper.mapToBookingItemList(bookingItemRepository.findAll());
+  }
 
 }

@@ -10,8 +10,8 @@ import lombok.Data;
  */
 @Data
 public class BookingItemConfig {
-	
-	/** Default value for the availability range in days*/
-	private int availabilityRangeDays;
+
+  /** Default value for the availability range in days */
+  private int availabilityRangeDays;
 
 }

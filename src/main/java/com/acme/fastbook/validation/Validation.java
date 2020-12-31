@@ -18,34 +18,36 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Validation<T> {
 
-	/** Rule to be used to perform the validation */
-	private Predicate<T> rule;
+  /** Rule to be used to perform the validation */
+  private Predicate<T> rule;
 
-	/** Error message that should be used if validation constraint has not been met */
-	private String errorMessage;
+  /**
+   * Error message that should be used if validation constraint has not been met
+   */
+  private String errorMessage;
 
-	/**
-	 * Validate an argument against the {@code rule}
-	 * 
-	 * @param arg argument to be validated
-	 * 
-	 * @return true, if rule is validated, false otherwise
-	 */
-	public boolean validate(T arg) {
-		return rule.test(arg);
-	}
-	
-	/**
-	 * Validate an argument against the {@code rule} and return associated
-	 * error message
-	 * 
-	 * @param arg argument to be validated
-	 * 
-	 * @return an associated error message if validation returned false, or an empty String,
-	 *         if validation returned true 
-	 */
-	public String validateAndGetErrorMessage(T arg) {
-		return rule.test(arg)? "" : this.errorMessage + "\n";
-	}
+  /**
+   * Validate an argument against the {@code rule}
+   * 
+   * @param arg argument to be validated
+   * 
+   * @return true, if rule is validated, false otherwise
+   */
+  public boolean validate(T arg) {
+    return rule.test(arg);
+  }
+
+  /**
+   * Validate an argument against the {@code rule} and return associated error
+   * message
+   * 
+   * @param arg argument to be validated
+   * 
+   * @return an associated error message if validation returned false, or an empty
+   *         String, if validation returned true
+   */
+  public String validateAndGetErrorMessage(T arg) {
+    return rule.test(arg) ? "" : this.errorMessage + "\n";
+  }
 
 }

@@ -12,11 +12,11 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ErrorResponse {
-	
-	/** Error status */
-	private ErrorStatus errorStatus;
-	
-	/** Descriptive message */
-	private String message;
+
+  /** Error status */
+  private ErrorStatus errorStatus;
+
+  /** Descriptive message */
+  private String message;
 
 }

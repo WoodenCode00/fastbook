@@ -20,26 +20,26 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableJpaRepositories(basePackages = "com.acme.fastbook.persistence.repository")
 @EnableTransactionManagement
-@Sql({"/insert-booking-item.sql"}) // inserts data to DB
+@Sql({ "/insert-booking-item.sql" }) // inserts data to DB
 public class JpaTestConfig {
 
-	/** Spring environment */
-    @Autowired
-    private Environment env;
-    
-    /**
-     * Configures {@link DataSource} bean
-     * 
-     * @return {@link DataSource} bean
-     */
-    @Bean
-    public DataSource dataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(env.getProperty("spring.datasource.driver-class-name"));
-        dataSource.setUrl(env.getProperty("spring.datasource.url"));
-        dataSource.setUsername(env.getProperty("spring.datasource.user"));
-        dataSource.setPassword(env.getProperty("spring.datasource.pass"));
+  /** Spring environment */
+  @Autowired
+  private Environment env;
 
-        return dataSource;
-    }
+  /**
+   * Configures {@link DataSource} bean
+   * 
+   * @return {@link DataSource} bean
+   */
+  @Bean
+  public DataSource dataSource() {
+    DriverManagerDataSource dataSource = new DriverManagerDataSource();
+    dataSource.setDriverClassName(env.getProperty("spring.datasource.driver-class-name"));
+    dataSource.setUrl(env.getProperty("spring.datasource.url"));
+    dataSource.setUsername(env.getProperty("spring.datasource.user"));
+    dataSource.setPassword(env.getProperty("spring.datasource.pass"));
+
+    return dataSource;
+  }
 }
