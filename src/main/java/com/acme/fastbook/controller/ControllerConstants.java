@@ -7,7 +7,7 @@ package com.acme.fastbook.controller;
  *
  */
 public class ControllerConstants {
-	
-	/** Application base path */
-	public static final String BASE_APP_PATH = "fastbook";
+
+  /** Application base path */
+  public static final String BASE_APP_PATH = "fastbook";
 }

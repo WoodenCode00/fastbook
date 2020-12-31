@@ -10,7 +10,7 @@ import lombok.Data;
  */
 @Data
 public class PromotionConfig {
-	
-	/** Percentage of the reduction to be applied to a base price */
-	private float reductionPercentage; 
+
+  /** Percentage of the reduction to be applied to a base price */
+  private float reductionPercentage;
 }

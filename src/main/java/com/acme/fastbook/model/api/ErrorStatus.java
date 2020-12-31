@@ -7,8 +7,6 @@ package com.acme.fastbook.model.api;
  *
  */
 public enum ErrorStatus {
-	
-	RESOURCE_NOT_FOUND,
-	BAD_REQUEST,
-	INTERNAL_SERVER_ERROR
+
+  RESOURCE_NOT_FOUND, BAD_REQUEST, INTERNAL_SERVER_ERROR
 }

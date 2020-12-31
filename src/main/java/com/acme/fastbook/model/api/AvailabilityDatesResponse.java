@@ -11,16 +11,16 @@ import lombok.Data;
 /**
  * Availability Dates response with a list of availability dates
  * 
- * @author  Mykhaylo Symulyk
+ * @author Mykhaylo Symulyk
  *
  */
 @Data
 @AllArgsConstructor
 public class AvailabilityDatesResponse {
-	
-	/** Booking item ID */
-	private UUID bookingItemId;
-	
-	/** List of availability dates */
-	private List<DateRange> availabilityDates;
+
+  /** Booking item ID */
+  private UUID bookingItemId;
+
+  /** List of availability dates */
+  private List<DateRange> availabilityDates;
 }

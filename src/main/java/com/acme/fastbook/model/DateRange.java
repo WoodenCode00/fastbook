@@ -12,10 +12,10 @@ import lombok.Data;
  */
 @Data
 public class DateRange {
-	
-	/** Start of the date range */
-	private final ZonedDateTime startDate;
-	
-	/** End of the date range */
-	private final ZonedDateTime endDate;
+
+  /** Start of the date range */
+  private final ZonedDateTime startDate;
+
+  /** End of the date range */
+  private final ZonedDateTime endDate;
 }

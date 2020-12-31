@@ -15,13 +15,13 @@ import lombok.Data;
 @Configuration
 @ConfigurationProperties(prefix = "fastbook-config")
 public class FastBookConfig {
-	
-	/** {@link BookingItemConfig} properties */
-	private BookingItemConfig bookingItemConfig;
-	
-	/** {@link ReservationConfig} properties */
-	private ReservationConfig reservationConfig;
-	
-	/** {@link PromotionConfig} properties */
-	private PromotionConfig promotionConfig;
+
+  /** {@link BookingItemConfig} properties */
+  private BookingItemConfig bookingItemConfig;
+
+  /** {@link ReservationConfig} properties */
+  private ReservationConfig reservationConfig;
+
+  /** {@link PromotionConfig} properties */
+  private PromotionConfig promotionConfig;
 }

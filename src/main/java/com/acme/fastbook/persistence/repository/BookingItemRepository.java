@@ -8,15 +8,15 @@ import org.springframework.data.repository.CrudRepository;
 import com.acme.fastbook.persistence.model.BookingItemEntity;
 
 /**
- * DB Repository implementation to manage DB data for {@link BookingItemEntity}. It inherits methods from
- * Spring's {@link CrudRepository} interface.
- *  
+ * DB Repository implementation to manage DB data for {@link BookingItemEntity}.
+ * It inherits methods from Spring's {@link CrudRepository} interface.
+ * 
  * @author Mykhaylo Symulyk
  *
  */
 public interface BookingItemRepository extends CrudRepository<BookingItemEntity, UUID> {
-	
-	@Override
-	List<BookingItemEntity> findAll();
+
+  @Override
+  List<BookingItemEntity> findAll();
 
 }
