@@ -31,8 +31,10 @@ public class DateRangeHelper {
    * 
    * @return new {@link DateRange} object with adjusted Date-Time values
    */
-  public static DateRange adjustToCheckinCheckoutConfiguredTime(final @NonNull BookingItem bookingItem,
-      final @NonNull ZonedDateTime startDate, final @NonNull ZonedDateTime endDate) {
+  public static DateRange adjustToCheckinCheckoutConfiguredTime(
+      final @NonNull BookingItem bookingItem,
+      final @NonNull ZonedDateTime startDate,
+      final @NonNull ZonedDateTime endDate) {
 
     final LocalTime checkInTime = bookingItem.getCheckinTime();
     final LocalTime checkOutTime = bookingItem.getCheckoutTime();
@@ -52,16 +54,17 @@ public class DateRangeHelper {
    * 
    * @return list of available date ranges
    */
-  public static List<DateRange> transformReservedRangesIntoAvailableRanges(final @NonNull ZonedDateTime startRange,
-      final @NonNull ZonedDateTime endRange, final @NonNull List<DateRange> reservedRanges) {
+  public static List<DateRange> transformReservedRangesIntoAvailableRanges(
+      final @NonNull ZonedDateTime startRange,
+      final @NonNull ZonedDateTime endRange,
+      final @NonNull List<DateRange> reservedRanges) {
 
     List<DateRange> availabilityRanges = new ArrayList<>();
 
     if (reservedRanges.isEmpty()) { // if empty, then all days are available
       final DateRange dateRange = new DateRange(startRange, endRange);
       availabilityRanges.add(dateRange);
-    } else if (reservedRanges.size() == 1 // one DateRange that occupies the whole search range, that is, no days
-                                          // available
+    } else if (reservedRanges.size() == 1 // one DateRange that occupies the whole search range, that is, no days available
         && (reservedRanges.get(0).getStartDate().isBefore(startRange)
             || reservedRanges.get(0).getStartDate().equals(startRange))
         && (reservedRanges.get(0).getEndDate().isAfter(endRange)
@@ -83,11 +86,13 @@ public class DateRangeHelper {
    * 
    * @return list of available date ranges
    */
-  private static List<DateRange> transformeAdvancedCase(ZonedDateTime startRange, ZonedDateTime endRange,
-      List<DateRange> reservedRanges) {
+  private static List<DateRange> transformeAdvancedCase(
+      final ZonedDateTime startRange,
+      final ZonedDateTime endRange,
+      final List<DateRange> reservedRanges) {
 
-    List<DateRange> availabilityRanges = new ArrayList<>();
-    List<DateRange> reservedRangesExtended = new ArrayList<>(reservedRanges);
+    final List<DateRange> availabilityRanges = new ArrayList<>();
+    final List<DateRange> reservedRangesExtended = new ArrayList<>(reservedRanges);
 
     // if first DateRange starts after startRange
     if (reservedRanges.get(0).getStartDate().isAfter(startRange)) {
@@ -113,11 +118,11 @@ public class DateRangeHelper {
       // take the value from 'next' variable
       current = (current == null) ? iterator.next() : next;
 
-      ZonedDateTime startDate = current.getEndDate();
+      final ZonedDateTime startDate = current.getEndDate();
 
       if (iterator.hasNext()) {
         next = iterator.next();
-        ZonedDateTime endDate = next.getStartDate();
+        final ZonedDateTime endDate = next.getStartDate();
         DateRange availabilityDate = new DateRange(startDate, endDate);
         availabilityRanges.add(availabilityDate);
       }
