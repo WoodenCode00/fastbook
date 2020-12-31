@@ -1,7 +1,6 @@
 package com.acme.fastbook.controller;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.acme.fastbook.config.MathContextConf;
 import com.acme.fastbook.exception.InvalidRequestException;
 import com.acme.fastbook.model.BookingItem;
 import com.acme.fastbook.model.DateRange;
@@ -73,22 +73,20 @@ public class BookingItemController {
 
     final Optional<BookingItem> bookingItemOpt = bookingItemPersistenceService.findById(bookingItemId);
 
-    if (!bookingItemOpt.isPresent()) {
-      throw new InvalidRequestException(
-          String.format("BookingItem with id = [%s] is not found.", bookingItemId.toString()));
-    }
+    final BookingItem bookingItem = bookingItemOpt
+        .orElseThrow(() -> new InvalidRequestException(
+            String.format("BookingItem with id = [%s] is not found.", bookingItemId.toString())));
 
     validateReservationOrThrow(reservation);
 
-    final BookingItem bookingItem = bookingItemOpt.get();
-
+    final BigDecimal reductionPercentage = new BigDecimal(
+        String.valueOf(fastBookConfig.getPromotionConfig().getReductionPercentage()));
+    
     // Calculate dailyCostWithReduction
-    // Formula: reduction = (reductionPercentage / 100) * baseDailyCost
-    final BigDecimal reduction = new BigDecimal(
-        String.valueOf(fastBookConfig.getPromotionConfig().getReductionPercentage())).divide(HUNDRED)
-            .multiply(bookingItem.getBaseDailyCost());
-
-    final BigDecimal dailyCostWithReduction = bookingItem.getBaseDailyCost().subtract(reduction);
+    // Formula: adjustedCost = (100 - reductionPercentage) * baseDailyCost
+    final BigDecimal dailyCostWithReduction = HUNDRED
+        .subtract(reductionPercentage, MathContextConf.TWO_DOWN)
+        .multiply(bookingItem.getBaseDailyCost(), MathContextConf.TWO_DOWN); 
 
     // Adjust start time and end time based on BookingItem checkin/checkout DB
     // configured values
@@ -100,7 +98,7 @@ public class BookingItemController {
     reservation.setBookingItemId(bookingItemId);
     reservation.setDateRange(adjustedDateRange);
     reservation.setReservationStatus(ReservationStatus.ACTIVE);
-    reservation.setDailyCost(dailyCostWithReduction.setScale(2, RoundingMode.DOWN));
+    reservation.setDailyCost(dailyCostWithReduction);
 
     return reservationPersistenceService.checkDatesAndCreate(reservation, Arrays.asList(ReservationStatus.CANCELLED));
   }
