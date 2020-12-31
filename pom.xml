@@ -12,11 +12,13 @@
 	<artifactId>fastbook</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>fastbook</name>
+	<packaging>jar</packaging>
 	<description>Application provides the ability to make a booking.</description>
 
 	<properties>
 		<java.version>1.8</java.version>
 		<mapstruct.version>1.4.1.Final</mapstruct.version>
+		<skipITs>true</skipITs> <!-- Skip integration tests: mvn clean install -DskipITs -->
 	</properties>
 
 	<dependencies>
@@ -76,6 +78,27 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
+        <dependency>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+        </dependency>
+        
+        <!-- to support Junit 4 tests running in JUnit 5 environment -->
+        <dependency>
+          <groupId>org.junit.vintage</groupId>
+          <artifactId>junit-vintage-engine</artifactId>
+          <scope>test</scope>
+        </dependency>
+
+        <!-- test concurrency --> 
+        <dependency>
+          <groupId>com.google.code.tempus-fugit</groupId>
+          <artifactId>tempus-fugit</artifactId>
+          <version>1.1</version>
+          <scope>test</scope>
+        </dependency>
+        
 
 	</dependencies>
 
@@ -119,6 +142,24 @@
                    <version>0.2.0</version>
                  </path>
                </annotationProcessorPaths>
+             </configuration>
+           </plugin>
+           
+           <!-- unit tests -->
+           <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-surefire-plugin</artifactId>
+           </plugin>
+           
+           <!-- integration tests -->
+           <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-failsafe-plugin</artifactId>
+             <configuration>
+                <skipITs>${skipITs}</skipITs>
+                <includes>
+                  <include>**/*IT.java</include>
+                </includes>
              </configuration>
            </plugin>
 
