@@ -27,17 +27,6 @@ public class Validation<T> {
   private String errorMessage;
 
   /**
-   * Validate an argument against the {@code rule}
-   * 
-   * @param arg argument to be validated
-   * 
-   * @return true, if rule is validated, false otherwise
-   */
-  public boolean validate(T arg) {
-    return rule.test(arg);
-  }
-
-  /**
    * Validate an argument against the {@code rule} and return associated error
    * message
    * 
@@ -47,7 +36,7 @@ public class Validation<T> {
    *         String, if validation returned true
    */
   public String validateAndGetErrorMessage(T arg) {
-    return rule.test(arg) ? "" : this.errorMessage + "\n";
+    return rule.test(arg) ? "" : this.errorMessage + System.lineSeparator();
   }
 
 }
