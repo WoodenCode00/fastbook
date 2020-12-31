@@ -58,7 +58,9 @@ public class BaseReservationPersistenceService implements ReservationPersistence
       final ReservationEntity reservationEntity = modelMapper.mapToDbEntity(reservation);
       return write(reservationEntity);
     } else {
-      throw new InvalidRequestException("Reservation can no be created: dates are not available.");
+      throw new InvalidRequestException(
+          String.format("Reservation can no be created: dates are not available: [%s] - [%s]",
+              reservation.getDateRange().getStartDate(), reservation.getDateRange().getEndDate()));
     }
   }
 
@@ -103,7 +105,9 @@ public class BaseReservationPersistenceService implements ReservationPersistence
       CopyUtils.copyNonNullProperties(newReservation, reservationFromDb);
       return write(modelMapper.mapToDbEntity(reservationFromDb));
     } else {
-      throw new InvalidRequestException("Reservation can no be updated: dates are not available.");
+      throw new InvalidRequestException(
+          String.format("Reservation can no be created: dates are not available: [%s] - [%s]",
+              newReservation.getDateRange().getStartDate(), newReservation.getDateRange().getEndDate()));
     }
 
   }
