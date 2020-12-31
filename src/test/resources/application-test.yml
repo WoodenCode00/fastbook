@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: "jdbc:h2:mem:fastbookdb;DB_CLOSE_DELAY=-1" # in-memory storage; keep connection
+    initialization-mode: embedded # automatyically init only for embedded DB
+    driver-class-name: "org.h2.Driver"
+    username: sa
+    password:
+  jackson:
+    property-naming-strategy: KEBAB_CASE
+logging:
+  level:
+    root: INFO
+    org.hibernate.SQL: ERROR # Log SQL statements
+    org.hibernate.type.descriptor.sql: ERROR # Log arguments to SQL statements
+    
+hibernate:
+  dialect: "org.hibernate.dialect.H2Dialect"
+  hbm2ddl.auto: create
+   

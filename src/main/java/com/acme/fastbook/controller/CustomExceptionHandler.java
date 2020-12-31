@@ -9,7 +9,9 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import com.acme.fastbook.exception.BookingItemNotFoundException;
 import com.acme.fastbook.exception.InvalidRequestException;
 import com.acme.fastbook.exception.ProcessingException;
+import com.acme.fastbook.exception.ReservationCreationException;
 import com.acme.fastbook.exception.ReservationNotFoundException;
+import com.acme.fastbook.exception.ReservationUpdateException;
 import com.acme.fastbook.model.api.ErrorResponse;
 import com.acme.fastbook.model.api.ErrorStatus;
 
@@ -59,14 +61,30 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
     
     /**
-     * Handles generic and unhandled exceptions
+     * Handles known 500 exceptions so we can safely return error message to the client
      * 
      * @param exception exception object
      * 
      * @return error response to be returned to the client
      */
-    @ExceptionHandler({ProcessingException.class, Exception.class})
-    public ResponseEntity<ErrorResponse> handleGenericException(final Exception exception) {
+    @ExceptionHandler({ProcessingException.class, ReservationUpdateException.class, ReservationCreationException.class})
+    public ResponseEntity<ErrorResponse> handleKnown500Exception(final Exception exception) {
+    	
+    	final ErrorResponse errorResponse = new ErrorResponse(ErrorStatus.INTERNAL_SERVER_ERROR,
+    			exception.getMessage());
+    	return handleException(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR, exception);
+    }
+    
+    /**
+     * Handles not anticipated 500 exceptions so we provide a generic error response
+     * to not lick the implementation details outside
+     * 
+     * @param exception exception object
+     * 
+     * @return error response to be returned to the client
+     */
+    @ExceptionHandler({Exception.class})
+    public ResponseEntity<ErrorResponse> handleUnknown500Exception(final Exception exception) {
     	
     	final ErrorResponse errorResponse = new ErrorResponse(ErrorStatus.INTERNAL_SERVER_ERROR,
     			"Internal Server Error: Please contact support for more details.");

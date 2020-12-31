@@ -2,6 +2,7 @@ package com.acme.fastbook.controller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -51,7 +52,7 @@ public class ReservationController {
 		reservation.setId(reservationId);
 		reservation.setReservationStatus(ReservationStatus.CANCELLED);
 		
-		return reservationPersistenceService.update(reservation);
+		return reservationPersistenceService.checkDatesAndUpdate(reservation, Collections.emptyList());
 	}
 	
 	/**
@@ -68,16 +69,6 @@ public class ReservationController {
 		final List<ReservationStatus> statusesToExclude = Arrays.asList(ReservationStatus.CANCELLED);
 		
 		validateReservationForUpdateOrThrow(reservation);
-
-		// throw exception if reservation.status is in statusesToExclude list
-		final ReservationStatus currentStatus =  reservationPersistenceService.getReservation(reservationId)
-				.getReservationStatus();
-		
-		if (statusesToExclude.contains(currentStatus)) {
-			throw new InvalidRequestException(
-					String.format("Reservation with id = [%s] can not be updated because it has status [%s].", 
-							reservationId.toString(), currentStatus));
-		}
 		
 		// adjust new DateRange based on BookingItem checkin/checkout DB configured values
 		final UUID bookingItemId = reservationPersistenceService.getReservation(reservationId).getBookingItemId();
@@ -89,10 +80,10 @@ public class ReservationController {
 		final DateRange adjustedDateRange = DateRangeHelper.adjustToCheckinCheckoutConfiguredTime(
 				bookingItem, reservation.getDateRange().getStartDate(), reservation.getDateRange().getEndDate());
 		
-		reservation.setDateRange(adjustedDateRange);
 		reservation.setId(reservationId);
+		reservation.setDateRange(adjustedDateRange);
 		
-		return reservationPersistenceService.update(reservation);
+		return reservationPersistenceService.checkDatesAndUpdate(reservation, statusesToExclude);
 	}
 
 	/**

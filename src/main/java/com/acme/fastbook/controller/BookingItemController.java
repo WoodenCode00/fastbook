@@ -31,7 +31,6 @@ import com.acme.fastbook.model.config.FastBookConfig;
 import com.acme.fastbook.model.helper.DateRangeHelper;
 import com.acme.fastbook.persistence.service.BookingItemPersistenceService;
 import com.acme.fastbook.persistence.service.ReservationPersistenceService;
-import com.acme.fastbook.service.ReservationService;
 import com.acme.fastbook.validation.Validation;
 import com.acme.fastbook.validation.ValidationRunner;
 
@@ -101,7 +100,7 @@ public class BookingItemController {
 		reservation.setReservationStatus(ReservationStatus.ACTIVE);
 		reservation.setDailyCost(dailyCostWithReduction.setScale(2, RoundingMode.DOWN));
 
-		return ReservationService.checkAndCreate(reservationPersistenceService, reservation);
+		return reservationPersistenceService.checkDatesAndCreate(reservation, Arrays.asList(ReservationStatus.CANCELLED));
 	}
 	
 	/**
